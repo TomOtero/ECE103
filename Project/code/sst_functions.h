@@ -21,6 +21,7 @@ typedef struct
 	int starbaseLocation[2];
 	int galaxy[8][8];
 	int galaxyRecord[8][8];
+	int klingData[3][3];
 	
 	//doubles
 	double repairTime;
@@ -48,6 +49,9 @@ typedef struct
 	void initialize(GameVariables *gameVars);
 	void event_handler(GameVariables *gameVars);
 	void command_help(void);
+
+	double find_distance(GameVariables *gameVars);
+	double find_random(GameVariables *gameVars);
 
 
 #endif

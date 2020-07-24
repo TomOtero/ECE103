@@ -1,3 +1,5 @@
+// COMPILE USING C90, gcc "Star Trek Completed Code.c" -std=C90
+
 /*
  * startrek.c
  *

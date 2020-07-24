@@ -61,17 +61,17 @@ void clear(GameVariables *gameVars)
 {
 	//Initializing time
 	gameVars->stardateCurr=(int)(rand()*20+20)*100;
-	gameVars->stardateStart=stardateCurr
+	gameVars->stardateStart=stardateCurr;
 	gameVars->stardateEnd = 25+(int)(rand()*10) 
 
 	//Initialize Enterprise
-	gameVars->dockFlag 		= 0;
-	gameVars->startEnergy 	= 3000;
+	gameVars->dockFlag 			= 0;
+	gameVars->startEnergy 		= 3000;
 	gameVars->currEnergy 		= gameVars->startEnergy;
-	gameVars->torpCap 		= 10;
-	gameVars->torpLeft 		= gameVars->torpCap;
+	gameVars->torpCap 			= 10;
+	gameVars->torpLeft 			= gameVars->torpCap;
 	gameVars->shields 			= 0;
-	gameVars->klingPow 		= 200;
+	gameVars->klingPow 			= 200;
 	gameVars->klingLeft 		= 0;
 	gameVars->starbaseTotal 	= 2;
 
@@ -157,4 +157,15 @@ void command_help(void)
       printf("  com - Library Computer\n");
       printf("  xxx - Resign Command\n");
       printf("\n");
+}
+
+double find_distance(GameVariables *gameVars)
+{
+	sqrt(pow((gameVars->klingData[index][0]-gameVars->entSect1),2)+
+		pow((gameVars->klingData[index][1]-gameVars->entSect2),2))
+}
+
+double find_random(GameVariables *gameVars)
+{
+
 }
