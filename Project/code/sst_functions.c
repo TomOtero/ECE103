@@ -161,8 +161,11 @@ void command_help(void)
 
 double find_distance(GameVariables *gameVars)
 {
-	sqrt(pow((gameVars->klingData[index][0]-gameVars->entSect1),2)+
-		pow((gameVars->klingData[index][1]-gameVars->entSect2),2))
+	double dist = 0.0;
+	dist = sqrt(pow((gameVars->klingData[index][0]-gameVars->entSect1),2)+
+			pow((gameVars->klingData[index][1]-gameVars->entSect2),2))
+
+	return dist;
 }
 
 double find_random(GameVariables *gameVars)
