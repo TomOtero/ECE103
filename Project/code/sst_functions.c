@@ -69,11 +69,11 @@ void intro(void)
 void clear(GameVariables *gameVars)
 {
 	//Initializing time
-	gameVars->stardateCurr=(int)(rand()*20+20)*100;  		// T
-	gameVars->stardateStart=stardateCurr;			 		// T0
-	gameVars->stardateEnd = 25+(int)(rand()*10); 	 		// T9
+	gameVars->stardateCurr		=(int)(rand()*20+20)*100;  	// T
+	gameVars->stardateStart		=gameVars->stardateCurr;	// T0
+	gameVars->stardateEnd 		= 25+(int)(rand()*10); 	 	// T9
 
-	//Initialize Enterprise
+	//Initialize general
 	gameVars->dockFlag 			 = 0;						// D0
 	gameVars->startEnergy 		 = 3000;						// E
 	gameVars->currEnergy 		 = gameVars->startEnergy;	// E0
@@ -83,9 +83,23 @@ void clear(GameVariables *gameVars)
 	gameVars->klingPow 			 = 200;						// S9
 	gameVars->klingLeft 		 = 0;						// K9
 	gameVars->starbaseTotal 	 = 2;						// B9
-	gameVars->galaxy[0][0]		 = { 0 };
-	gameVars->galaxyRecord[0][0] = { 0 };
-	gameVars->klingData[0][0]	 = { 0 };
+
+	//Initialize strings
+	strcpy(gameVars->tempStr[0], "");
+	strcpy(gameVars->tempStr[1], "IS");
+
+	// Initializing arrays 
+	/*
+		Wasn't sure if arrays needed to be fully initialized, and they do not
+	  	accordding to IBM:
+	  	https://www.ibm.com/support/knowledgecenter/en/SSLTBW_2.2.0/com.ibm.zos.v2r2.cbclx01/aryin.htm
+	  	 
+	*/
+	gameVars->galaxy[0][0]		 = 0;
+	gameVars->galaxyRecord[0][0] = 0;
+	gameVars->klingData[0][0]	 = 0;
+	
+
 
 }
 
@@ -96,10 +110,35 @@ void initialize(GameVariables *gameVars)
 	clear(gameVars);
 
 	// Initialize Enterprise
+	gameVars->entQuad[0] = find_random();
+	gameVars->entQuad[1] = find_random();
+	gameVars->entSect[0] = find_random();
+	gameVars->entSect[1] = find_random();
+	gameVars->damage[0]  = 0;
+	static const long tempArray[9][2] = {{0,1},
+								   {-1,1},
+								   {-1,0},
+								   {-1,-1},
+								   {0-1},
+								   {1,-1},
+								   {1,0},
+								   {1,1},
+								   {0,1}};
+
+	memcpy(gameVars->locationMove, tempArray, sizeof tempArray);
+	//////////////////////////////////
+	//        Debug
+	// for(int i=0; i<9; i++)
+	// {
+	// 	for(int j=0; j<2; j++)
+	// 	{
+	// 		printf("%d", gameVars->locationMove[i][j]); 
+	// 	}
+	// 	printf("\n");
+	// }
+	//////////////////////////////////
 
 	
-
-
 }
 
 void event_handler(GameVariables *gameVars)
@@ -168,7 +207,7 @@ double find_distance(GameVariables *gameVars, int index)
 	return dist;
 }
 
-int find_random(GameVariables *gameVars)
+int find_random(void)
 {
 	int randReturn = 0;
 	randReturn = rand()*7.98+1.01;
