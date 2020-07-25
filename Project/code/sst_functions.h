@@ -48,6 +48,7 @@ typedef struct
 	char quadDisp[194];
 	char tempStr[2][10];
 	char command[6];
+	char commandList[9][6];								// A1$
 
 }GameVariables;
 #endif

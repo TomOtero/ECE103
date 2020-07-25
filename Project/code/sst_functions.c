@@ -88,6 +88,10 @@ void clear(GameVariables *gameVars)
 	//Initialize strings
 	strcpy(gameVars->tempStr[0], "");
 	strcpy(gameVars->tempStr[1], "IS");
+	const char tempCommandList[9][6] = {{"NAV"},{"SRS"},{"LRS"},
+										{"PHA"},{"TOR"},{"SHE"},
+										{"DAM"},{"COM"},{"XXX"}};
+	memcpy(gameVars->commandList, tempCommandList, sizeof tempCommandList); // 710
 
 	// Initializing arrays 
 	/*
@@ -116,15 +120,9 @@ void initialize(GameVariables *gameVars)
 	gameVars->entSect[0] = find_random();
 	gameVars->entSect[1] = find_random();
 	gameVars->damage[0]  = 0;
-	static const long tempArray[9][2] = {{0,1},
-								   {-1,1},
-								   {-1,0},
-								   {-1,-1},
-								   {0-1},
-								   {1,-1},
-								   {1,0},
-								   {1,1},
-								   {0,1}};
+	static const long tempArray[9][2] = {{0,1}, {-1,1}, {-1,0},		// 530 - 600
+	   								     {-1,-1}, {0-1}, {1,-1},
+								         {1,0}, {1,1}, {0,1}};
 
 	memcpy(gameVars->locationMove, tempArray, sizeof tempArray);
 	//////////////////////////////////
@@ -138,6 +136,7 @@ void initialize(GameVariables *gameVars)
 	// 	printf("\n");
 	// }
 	//////////////////////////////////
+
 
 	
 }
