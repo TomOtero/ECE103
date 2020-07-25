@@ -1,3 +1,10 @@
+/*
+	ECE 103 Engineering Programming
+	Team 9: Tom Otero, Ed Rees, Kevin Deleon
+	Last update: 07/25/20
+
+*/
+
 
 #ifndef	GAME_VARS
 #define GAME_VARS
@@ -15,7 +22,7 @@ typedef struct
 	int tempPos1, tempPos2; 							// r1, r2
 	int shields, stars;									// s, s3
 	int quadIndex;										// s8
-	int stardateStart, stardateDone,					// t0, t9
+	int stardateStart, stardateEnd,						// t0, t9
 	int tempSectCoord[2];								// z1, z2
 	int compare;										// z3
 	int tempQuadCoord[2];								// z4, z5 
@@ -44,6 +51,7 @@ typedef struct
 }GameVariables;
 #endif
 
+
 #ifndef SST_FUN
 #define SST_FUN
 
@@ -53,7 +61,8 @@ typedef struct
 	void event_handler(GameVariables *gameVars);
 	void command_help(void);
 
-	double find_distance(GameVariables *gameVars);
+	double find_distance(GameVariables *gameVars, int index);
+
 	int find_random(GameVariables *gameVars);
 
 

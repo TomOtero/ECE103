@@ -1,3 +1,12 @@
+/*
+	ECE 103 Engineering Programming
+	Team 9: Tom Otero, Ed Rees, Kevin Deleon
+	Last update: 07/25/20
+
+*/
+
+
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -62,20 +71,21 @@ void clear(GameVariables *gameVars)
 	//Initializing time
 	gameVars->stardateCurr=(int)(rand()*20+20)*100;  		// T
 	gameVars->stardateStart=stardateCurr;			 		// T0
-	gameVars->stardateEnd = 25+(int)(rand()*10) 	 		// T9
+	gameVars->stardateEnd = 25+(int)(rand()*10); 	 		// T9
 
 	//Initialize Enterprise
-	gameVars->dockFlag 			= 0;						// D0
-	gameVars->startEnergy 		= 3000;						// E
-	gameVars->currEnergy 		= gameVars->startEnergy;	// E0
-	gameVars->torpCap 			= 10;						// P
-	gameVars->torpLeft 			= gameVars->torpCap;		// P0
-	gameVars->shields 			= 0;						// S
-	gameVars->klingPow 			= 200;						// S9
-	gameVars->klingLeft 		= 0;						// K9
-	gameVars->starbaseTotal 	= 2;						// B9
-
-
+	gameVars->dockFlag 			 = 0;						// D0
+	gameVars->startEnergy 		 = 3000;						// E
+	gameVars->currEnergy 		 = gameVars->startEnergy;	// E0
+	gameVars->torpCap 			 = 10;						// P
+	gameVars->torpLeft 			 = gameVars->torpCap;		// P0
+	gameVars->shields 			 = 0;						// S
+	gameVars->klingPow 			 = 200;						// S9
+	gameVars->klingLeft 		 = 0;						// K9
+	gameVars->starbaseTotal 	 = 2;						// B9
+	gameVars->galaxy[0][0]		 = { 0 };
+	gameVars->galaxyRecord[0][0] = { 0 };
+	gameVars->klingData[0][0]	 = { 0 };
 
 }
 
@@ -86,6 +96,7 @@ void initialize(GameVariables *gameVars)
 	clear(gameVars);
 
 	// Initialize Enterprise
+
 	
 
 
@@ -148,11 +159,11 @@ void command_help(void)
       printf("\n");
 }
 
-double find_distance(GameVariables *gameVars)
+double find_distance(GameVariables *gameVars, int index)
 {
 	double dist = 0.0;
-	dist = sqrt(pow((gameVars->klingData[index][0]-gameVars->entSect1),2)+
-			pow((gameVars->klingData[index][1]-gameVars->entSect2),2))
+	dist = sqrt(pow((gameVars->klingData[index][0]-gameVars->entSect[0]),2)+
+			pow((gameVars->klingData[index][1]-gameVars->entSect[1]),2));
 
 	return dist;
 }
