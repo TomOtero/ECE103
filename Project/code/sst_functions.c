@@ -60,20 +60,20 @@ void intro(void)
 void clear(GameVariables *gameVars)
 {
 	//Initializing time
-	gameVars->stardateCurr=(int)(rand()*20+20)*100;
-	gameVars->stardateStart=stardateCurr;
-	gameVars->stardateEnd = 25+(int)(rand()*10) 
+	gameVars->stardateCurr=(int)(rand()*20+20)*100;  		// T
+	gameVars->stardateStart=stardateCurr;			 		// T0
+	gameVars->stardateEnd = 25+(int)(rand()*10) 	 		// T9
 
 	//Initialize Enterprise
-	gameVars->dockFlag 			= 0;
-	gameVars->startEnergy 		= 3000;
-	gameVars->currEnergy 		= gameVars->startEnergy;
-	gameVars->torpCap 			= 10;
-	gameVars->torpLeft 			= gameVars->torpCap;
-	gameVars->shields 			= 0;
-	gameVars->klingPow 			= 200;
-	gameVars->klingLeft 		= 0;
-	gameVars->starbaseTotal 	= 2;
+	gameVars->dockFlag 			= 0;						// D0
+	gameVars->startEnergy 		= 3000;						// E
+	gameVars->currEnergy 		= gameVars->startEnergy;	// E0
+	gameVars->torpCap 			= 10;						// P
+	gameVars->torpLeft 			= gameVars->torpCap;		// P0
+	gameVars->shields 			= 0;						// S
+	gameVars->klingPow 			= 200;						// S9
+	gameVars->klingLeft 		= 0;						// K9
+	gameVars->starbaseTotal 	= 2;						// B9
 
 
 
@@ -82,23 +82,12 @@ void clear(GameVariables *gameVars)
 
 void initialize(GameVariables *gameVars)
 {
-	/*
-	Initializes the game variables
-	*/
-
-	// Initialize Time
-	gameVars->stardateCurr = 
+	// Clear game vars to default
+	clear(gameVars);
 
 	// Initialize Enterprise
-	gameVars->dockFlag = 0;
-	gameVars->startEnergy = 3000;
-	gameVars->currEnergy = gameVars->startEnergy;
-	gameVars->torpCap = 10;
-	gameVars->torpLeft = gameVars->torpCap;
-	gameVars->shields = 0;
+	
 
-
-	printf("%d",&gameVars);
 
 }
 
@@ -168,7 +157,9 @@ double find_distance(GameVariables *gameVars)
 	return dist;
 }
 
-double find_random(GameVariables *gameVars)
+int find_random(GameVariables *gameVars)
 {
-
+	int randReturn = 0;
+	randReturn = rand()*7.98+1.01;
+	return randReturn;
 }
