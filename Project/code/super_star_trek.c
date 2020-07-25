@@ -61,35 +61,15 @@ int main()
 	/*
 	The Main Loop
 	*/
+
+	// Struct for game variables
 	GameVariables gameVars;
-
-
-	// // INIT variables
-	// char Z_char[96] = "                         ";
-	// int G[8][8], C[9][2], K[3][3], N[3], Z[8][8], D[8];
-	// int T = (rand()*20+20)*100;
-
-	// int T0 = T;
-	// int T9 = 25 + rand()*10; 
-	// int D0 = 0;
-	// int E=3000;
-	// int E0=E;
-	// int P=10; 		//
-	// int P0=P; 		//Photon torpedo
-	// int S9=200; 	//Klingon power
-	// int S=0; 		//current shield value
-	// int B9=2;		//number of starbases
-	// int K9=0; 
-	// //X$="" 
-	// //X0$=" IS "
-
-	
 
 	bool mainLoop = true;
 	int loopCount = 0;
 	while(mainLoop)
 	{
-		/* This while loop is for testing purposes.*/
+		/* This logic is for testing purposes.*/
 		if(loopCount<1)
 		{
 			intro();
