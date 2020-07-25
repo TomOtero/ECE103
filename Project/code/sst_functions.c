@@ -76,7 +76,7 @@ void clear(GameVariables *gameVars)
 
 	//Initialize general
 	gameVars->dockFlag 			 = 0;						// D0
-	gameVars->startEnergy 		 = 3000;						// E
+	gameVars->startEnergy 		 = 3000;					// E
 	gameVars->currEnergy 		 = gameVars->startEnergy;	// E0
 	gameVars->torpCap 			 = 10;						// P
 	gameVars->torpLeft 			 = gameVars->torpCap;		// P0
@@ -101,7 +101,7 @@ void clear(GameVariables *gameVars)
 	  	 
 	*/
 	gameVars->galaxy[0][0]		 = 0;
-	gameVars->galaxyRecord[0][0] = 0;
+	gameVars->galaxyRecord[0][0] = 0; 		// 820 
 	gameVars->klingData[0][0]	 = 0;
 	
 
@@ -145,6 +145,12 @@ void event_handler(GameVariables *gameVars)
 {
 	/*
 	Initializes the game variables
+
+	This function might not be necessary.
+	I usually use an event handler when make a program with
+	a bunch of different commands, but that might not be the
+	best approach this time. 
+	-Tom
 	*/
 
 	//Initialize Time
@@ -197,6 +203,13 @@ void command_help(void)
       printf("  xxx - Resign Command\n");
       printf("\n");
 }
+
+void galaxy_setup(GameVariables *gameVars);
+{
+	gameVars->tempPos[0] = rand();
+	if 
+}
+
 
 double find_distance(GameVariables *gameVars, int index)
 {

@@ -62,6 +62,7 @@ typedef struct
 	void initialize(GameVariables *gameVars);
 	void event_handler(GameVariables *gameVars);
 	void command_help(void);
+	void galaxy_setup(GameVariables *gameVars);
 
 	double find_distance(GameVariables *gameVars, int index);
 
