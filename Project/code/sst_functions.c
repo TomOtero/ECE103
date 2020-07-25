@@ -49,11 +49,12 @@ void intro(void)
 	{	
 		FILE *file;
 		char fileC;	
-		file = fopen("test.txt","r");
+		file = fopen("stinstr.txt","r");
 		while((fileC=fgetc(file))!=EOF)
 		{
 			printf("%c",fileC);
 		}
+		printf("\n\n");
 	}
 	// Print the Enterprise	
 	printf("                                 ,------*------,\n");
