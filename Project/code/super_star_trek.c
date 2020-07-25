@@ -82,6 +82,7 @@ int main()
 	int loopCount = 0;
 	while(mainLoop)
 	{
+		/* This while loop is for testing purposes.*/
 		if(loopCount<1)
 		{
 			intro();
@@ -93,7 +94,7 @@ int main()
 		}
 		loopCount++;
 	}
-	printf("E N D\n");
+	printf("E N D\n"); // debug message
 
 	return EXIT_SUCCESS;
 }
