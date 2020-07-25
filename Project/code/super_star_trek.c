@@ -1,3 +1,10 @@
+/*
+	ECE 103 Engineering Programming
+	Team 9: Tom Otero, Ed Rees, Kevin Deleon
+	Last update: 07/25/20
+
+*/
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
