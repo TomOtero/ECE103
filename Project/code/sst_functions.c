@@ -11,6 +11,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
+#include <time.h>
 #include <conio.h>
 #include <stdbool.h>
 
@@ -115,10 +116,10 @@ void initialize(GameVariables *gameVars)
 	clear(gameVars);
 
 	// Initialize Enterprise
-	gameVars->entQuad[0] = find_random();
-	gameVars->entQuad[1] = find_random();
-	gameVars->entSect[0] = find_random();
-	gameVars->entSect[1] = find_random();
+	gameVars->entQuad[0] = findRandom();
+	gameVars->entQuad[1] = findRandom();
+	gameVars->entSect[0] = findRandom();
+	gameVars->entSect[1] = findRandom();
 	gameVars->damage[0]  = 0;
 	static const long tempArray[9][2] = {{0,1}, {-1,1}, {-1,0},		// 530 - 600
 	   								     {-1,-1}, {0-1}, {1,-1},
@@ -141,7 +142,7 @@ void initialize(GameVariables *gameVars)
 	
 }
 
-void event_handler(GameVariables *gameVars)
+void eventHandler(GameVariables *gameVars)
 {
 	/*
 	Initializes the game variables
@@ -178,12 +179,12 @@ void event_handler(GameVariables *gameVars)
 	}
 	else
 	{
-		command_help();
+		commandHelp();
 	}
 
 }
 
-void command_help(void)
+void commandHelp(void)
 {
       printf("Enter one of the following:\n\n");
       printf("  nav - To Set Course\n");
@@ -198,7 +199,110 @@ void command_help(void)
       printf("\n");
 }
 
-double find_distance(GameVariables *gameVars, int index)
+//3490 REM EXCEEDED QUADRANT LIMITS
+void OutOfBounds (GameVariables *gameVars)
+{
+	int outOfBoundsFlag = 0;
+	gameVars->n = (int)(gameVars->warpFactor * 8.0);
+	
+	gameVars->navX = (8 * gameVars->entQuad[0]) + 
+					  gameVars->navX + (gameVars->n * gameVars->navX1); // not sure where the "n" is being pulled from
+	gameVars->navY = (8 * gameVars->entQuad[1]) + 
+					  gameVars->navY + (gameVars->n * gameVars->navY); // again not sure where the n is pulled
+	
+	gameVars->entQuad[0] = gameVars->navX/8;
+	gameVars->entQuad[1] = gameVars->navY/8;
+	gameVars->entSect[0] = gameVars->navX - gameVars->entQuad[0]/8;
+	gameVars->entSect[1] = gameVars->navY - gameVars->entQuad[1]/8;
+	
+	if (gameVars->entSect[0] == 0)
+	{
+		gameVars->entQuad[0] = gameVars->entQuad[0] - 1;
+		gameVars->entSect[0] = 8.0;
+	}
+	
+	if (gameVars->entSect[1] == 0)
+	{
+		gameVars->entQuad[1] = gameVars->entQuad[1] - 1;
+		gameVars->entSect[1] = 8.0;
+	}
+	
+	if (gameVars->entQuad[0] < 1)
+	{
+		outOfBoundsFlag = 1;
+		gameVars->entQuad[0] = 1;
+		gameVars->entSect[0] = 1.0;
+	}
+	
+	if (gameVars->entQuad[1] < 1)
+	{
+		outOfBoundsFlag = 1;
+		gameVars->entQuad[1] = 1;
+		gameVars->entSect[1] = 1.0;
+	}
+	
+	if (gameVars->entQuad[0] > 8)
+	{
+		outOfBoundsFlag = 1;
+		gameVars->entQuad[0] = 8;
+		gameVars->entSect[0] = 8.0;
+	}
+	
+	if (gameVars->entQuad[1] > 8)
+	{
+		outOfBoundsFlag = 1;
+		gameVars->entQuad[1] = 8;
+		gameVars->entSect[1] = 8.0;
+	}
+	
+    if (outOfBoundsFlag != 0)
+	{
+		printf("LT. UHURA REPORTS MESSAGE FROM STARFLEET COMMAND : \n");
+		printf("  'PERMISSION TO ATTEMPT CROSSING OF GALACTIC PERIMETER\n");
+		printf("   IS HEREBY *DENIED*.  SHUT DOWN YOUR ENGINES.'\n");
+		printf("   CHIEF ENGINEER SCOTT REPORTS  'WARP ENGINES SHUT DOWN\n");
+		printf("   AT SECTOR %.1lf,%.1lf OF QUADRANT %d, %d.'", 
+			gameVars->entSect[0], gameVars->entSect[1], 
+			gameVars->entQuad[0], gameVars->entQuad[1]);
+	}
+}
+
+
+void LongRangeScan (GameVariables *gameVars)
+{
+if (gameVars->damage[3] < 0)
+	{
+	printf("Long Range Sensors are inopperable");
+	}
+	
+printf("Long Range Scan for Quadrant %d, %d", gameVars->entQuad[0], gameVars->entQuad[1]);
+
+printf("    -------------------");
+
+for (int i = gameVars->entQuad[0] -1; i <= gameVars->entQuad[0] + 1; i++)
+	{
+	for (int j = gameVars->entQuad[1] - 1; j <= gameVars->entQuad[1] + 1; j++)
+		{
+		if (((i > 0) && (i < 9)) && ((j > 0) && (j < 9)))
+			{
+			gameVars->galaxyRecord[i][j] = gameVars->galaxy[i][j];
+			printf("%d :",gameVars->galaxyRecord[i][j]);
+			}
+		
+		else 
+			{
+			printf(" *** : ");
+			}
+		}
+		printf("\n");
+	}
+printf("    -------------------");	
+
+}
+
+
+
+double findDistance(GameVariables *gameVars, int index)
 {
 	double dist = 0.0;
 	dist = sqrt(pow((gameVars->klingData[index][0]-gameVars->entSect[0]),2)+
@@ -207,7 +311,7 @@ double find_distance(GameVariables *gameVars, int index)
 	return dist;
 }
 
-int find_random(void)
+int findRandom(void)
 {
 	int randReturn = 0;
 	randReturn = rand()*7.98+1.01;

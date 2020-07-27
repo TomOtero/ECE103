@@ -1,0 +1,9 @@
+#include "sst_functions.h"
+#include "function_template.h"
+
+void func(GameVariables *gameVars)
+{
+	//gameVars->someElementOfgameVars;
+	//
+	// example: gameVars->stardateCurr;
+}

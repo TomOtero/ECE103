@@ -33,13 +33,15 @@ typedef struct
 	int galaxyRecord[8][8];								// z[8][8]
 	int klingData[3][3];								// k[3][3]
 	int locationMove[9][2];								// c[9][2]
+	int outOfBoundsFlag;
+	int n;												// Number of sectors to travel //2490
 	
 	//doubles
 	double repairTime;									// d4
 	double entSect[2];		 							// s1, s2
 	double stardateCurr;								// t
 	double warpFactor;									// w1
-	double navx, navy, navx1, navx2;					// x, y, x1, x2
+	double navX, navY, navX1, navX2;					// x, y, x1, x2
 	double damage[8];									// d[8]
 
 	//strings
@@ -60,12 +62,15 @@ typedef struct
 	void intro(void);
 	void clear(GameVariables *gameVars);
 	void initialize(GameVariables *gameVars);
-	void event_handler(GameVariables *gameVars);
-	void command_help(void);
+	void eventHandler(GameVariables *gameVars);
+	void commandHelp(void);
+	void outOfBounds (GameVariables *gameVars);
+	void longRangeScan (GameVariables *gameVars);
 
-	double find_distance(GameVariables *gameVars, int index);
+	double findDistance(GameVariables *gameVars, int index);
 
-	int find_random(void);
+	int findRandom(void);
+
 
 
 #endif
