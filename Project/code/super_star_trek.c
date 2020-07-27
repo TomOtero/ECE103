@@ -14,6 +14,10 @@
 
 #include "sst_functions.h"
 
+#ifndef GAME_VARS_H
+#define GAME_VARS_H
+#include "GameVariables.h"
+#endif
 /*
 NEEDED TO ACTIVATE 80-COLUMN TEXT MODE ON APPLE IIE
 SUPER STARTREK - MAY 16,1978 - REQUIRES 24K MEMORY
