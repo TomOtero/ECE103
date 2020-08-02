@@ -1,7 +1,7 @@
 /*
 	ECE 103 Engineering Programming
 	Team 9: Tom Otero, Ed Rees, Kevin Deleon
-	Last update: 07/25/20
+	Last update: 08/02/20
 
 */
 
@@ -12,11 +12,11 @@
 #include <conio.h>
 #include <stdbool.h>
 
-#include "sst_functions.h"
+#include "./include/sst_functions.h"
 
 #ifndef GAME_VARS_H
 #define GAME_VARS_H
-#include "GameVariables.h"
+#include "./include/GameVariables.h"
 #endif
 /*
 NEEDED TO ACTIVATE 80-COLUMN TEXT MODE ON APPLE IIE
