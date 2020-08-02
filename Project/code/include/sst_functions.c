@@ -19,6 +19,18 @@
 
 
 
+/* Standard Line Length */
+ 
+#define MAXLEN     255
+ 
+/* Standard Terminal Sizes */
+ 
+#define MAXROW      24
+#define MAXCOL      80
+ 
+/* Standard Page Size */
+ 
+#define MAXLINES    66
 
 
 
@@ -78,7 +90,7 @@ void clear(GameVariables *gameVars)
 
 	//Initialize general
 	gameVars->dockFlag 			 = 0;						// D0
-	gameVars->startEnergy 		 = 3000;						// E
+	gameVars->startEnergy 		 = 3000;					// E
 	gameVars->currEnergy 		 = gameVars->startEnergy;	// E0
 	gameVars->torpCap 			 = 10;						// P
 	gameVars->torpLeft 			 = gameVars->torpCap;		// P0
@@ -96,16 +108,9 @@ void clear(GameVariables *gameVars)
 	memcpy(gameVars->commandList, tempCommandList, sizeof tempCommandList); // 710
 
 	// Initializing arrays 
-	/*
-		Wasn't sure if arrays needed to be fully initialized, and they do not
-	  	accordding to IBM:
-	  	https://www.ibm.com/support/knowledgecenter/en/SSLTBW_2.2.0/com.ibm.zos.v2r2.cbclx01/aryin.htm
-	  	 
-	*/
-	gameVars->galaxy[0][0]		 = 0;
-	gameVars->galaxyRecord[0][0] = 0;
-	gameVars->klingData[0][0]	 = 0;
-	
+	memset(gameVars->galaxy,0,sizeof gameVars->galaxy);
+	memset(gameVars->galaxyRecord,0,sizeof gameVars->galaxyRecord);
+	memset(gameVars->klingData,0,sizeof gameVars->klingData);
 
 
 }
@@ -201,7 +206,7 @@ void commandHelp(void)
 }
 
 //3490 REM EXCEEDED QUADRANT LIMITS
-void OutOfBounds (GameVariables *gameVars)
+void outOfBounds (GameVariables *gameVars)
 {
 	int outOfBoundsFlag = 0;
 	gameVars->n = (int)(gameVars->warpFactor * 8.0);
@@ -269,7 +274,7 @@ void OutOfBounds (GameVariables *gameVars)
 }
 
 
-void LongRangeScan (GameVariables *gameVars)
+void longRangeScan (GameVariables *gameVars)
 {
 if (gameVars->damage[3] < 0)
 	{
@@ -301,6 +306,20 @@ printf("    -------------------");
 
 }
 
+void courseNavigation(GameVariables *gameVars)
+{
+	int q4, q5;
+  	char sTemp[MAXLEN];
+  	double c1;
+  	char sX[4] = "8";
+
+  	printf("Course (0-9): ");
+  	gets(sTemp);
+  	printf("\n");
+  	c1 = atof(sTemp);
+
+}
+
 
 
 double findDistance(GameVariables *gameVars, int index)
@@ -318,3 +337,5 @@ int findRandom(void)
 	randReturn = rand()*7.98+1.01;
 	return randReturn;
 }
+
+

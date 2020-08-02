@@ -21,6 +21,7 @@
 	void commandHelp(void);
 	void outOfBounds (GameVariables *gameVars);
 	void longRangeScan (GameVariables *gameVars);
+	void courseNavigation(GameVariables *gameVars);
 
 	double findDistance(GameVariables *gameVars, int index);
 
