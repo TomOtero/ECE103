@@ -26,6 +26,17 @@
 	void maneuverEnergy(GameVariables *gameVars);
 	void shortRangeScan(GameVariables *gameVars);
 	void longRangeScan (GameVariables *gameVars);
+	void damageControl(GameVariables *gameVars);
+	void libraryComputer(GameVariables *gameVars);
+	void galacticRecord(GameVariables *gameVars);
+	void statusReport(GameVariables *gameVars);
+	void torpedoData(GameVariables *gameVars);
+	void navData(GameVariables *gameVars);
+	void dirdistCalc(GameVariables *gameVars);
+	void galaxyMap(GameVariables *gameVars);
+	void computeVector(GameVariables *gameVars);
+	void sub1(GameVariables *gameVars);
+	void sub2(GameVariables *gameVars);
 	void shipDestroyed(GameVariables *gameVars);
 	void endOfTime(GameVariables *gameVars);
 	void resignCommision(GameVariables *gameVars);

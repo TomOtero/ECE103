@@ -72,6 +72,10 @@ void eventHandler(GameVariables *gameVars)
 	{
 		printf("com function\n");		
 	}
+	else if (strcmp(gameVars->command,"xxx")==0)
+	{
+		resignCommision(gameVars);		
+	}
 	else
 	{
 		commandHelp();
@@ -247,8 +251,8 @@ void initialize(GameVariables *gameVars)
 
   	if (gameVars->starbaseTotal != 1)
     {
-      	strcpy(gameVars->tempStr[0], "s");
-      	strcpy(gameVars->tempStr[1], "are");
+      	strcpy(gameVars->tempStr[0], "S");
+      	strcpy(gameVars->tempStr[1], "ARE");
     }
 
 	printf("YOUR ORDERS ARE AS FOLLOWS :\n\n");
@@ -256,7 +260,7 @@ void initialize(GameVariables *gameVars)
 	printf("   THE GALAXY BEFORE THEY CAN ATTACK FEDERATION HEADQUARTERS\n");
 	printf("   ON STARDATE %d. THIS GIVES YOU %d DAYS. THERE %s\n",
 	gameVars->stardateStart + gameVars->stardateEnd, gameVars->stardateEnd, gameVars->tempStr[1]);
-	printf(" %d STARBASE%s IN THE GALAXY FOR RESUPPLYING YOUR SHIP.\n\n",
+	printf("   %d STARBASE%s IN THE GALAXY FOR RESUPPLYING YOUR SHIP.\n\n",
 	gameVars->starbaseTotal, gameVars->tempStr[0]);
 
 	printf("HIT ANY KEY WHEN READY TO ACCEPT COMMAND ");
@@ -377,7 +381,7 @@ void courseControl(GameVariables *gameVars) //2290 REM COURSE CONTROL BEGINS HER
 	/* @@@ int c2, c3, q4, q5; */
 	int q4, q5; 			// No idea what these are used for...
 	char temp[6];
-	double course;
+	// double course;
 	strcpy(gameVars->tempStr[0], "8");
 
 	printf("COURSE (0-9): ");
@@ -386,12 +390,12 @@ void courseControl(GameVariables *gameVars) //2290 REM COURSE CONTROL BEGINS HER
 
 	printf("\n");
 
-	course = atof(temp);
+	gameVars->course = atof(temp);
 
-	if (course == 9.0)
-	course = 1.0;
+	if (gameVars->course == 9.0)
+	gameVars->course = 1.0;
 
-	if (course < 0 || course > 9.0)
+	if (gameVars->course < 0 || gameVars->course > 9.0)
 	{
 	  printf("LT. SULU REPORTS, 'INCORRECT COURSE DATA, SIR!'\n");
 	  return;
@@ -448,13 +452,13 @@ void courseControl(GameVariables *gameVars) //2290 REM COURSE CONTROL BEGINS HER
 	gameVars->tempSectCoord[1] = (int)gameVars->entSect[1];
 	insertInQuadrant(gameVars);
 
-	gameVars->navX1 = gameVars->locationMove[1][(int)course] + 
-		(gameVars->locationMove[1][(int)course + 1] - 
-		gameVars->locationMove[1][(int)course]) * (course - (int)course);
+	gameVars->navX1 = gameVars->locationMove[1][(int)gameVars->course] + 
+		(gameVars->locationMove[1][(int)gameVars->course + 1] - 
+		gameVars->locationMove[1][(int)gameVars->course]) * (gameVars->course - (int)gameVars->course);
 	
-	gameVars->navX2 = gameVars->locationMove[2][(int)course] + 
-		(gameVars->locationMove[2][(int)course + 1] - 
-		gameVars->locationMove[2][(int)course]) * (course - (int)course);
+	gameVars->navX2 = gameVars->locationMove[2][(int)gameVars->course] + 
+		(gameVars->locationMove[2][(int)gameVars->course + 1] - 
+		gameVars->locationMove[2][(int)gameVars->course]) * (gameVars->course - (int)gameVars->course);
 
 	gameVars->navX = gameVars->entSect[0];
 	gameVars->navY = gameVars->entSect[1];
@@ -581,13 +585,13 @@ void outOfBounds (GameVariables *gameVars)
 		gameVars->entSect[1] = 8.0;
 	}
 	
-    if (outOfBoundsFlag != 0)
+    if (outOfBoundsFlag == 1)
 	{
-		printf("LT. UHURA REPORTS MESSAGE FROM STARFLEET COMMAND : \n");
-		printf("  'PERMISSION TO ATTEMPT CROSSING OF GALACTIC PERIMETER\n");
+		printf("   LT. UHURA REPORTS MESSAGE FROM STARFLEET COMMAND : \n");
+		printf("   'PERMISSION TO ATTEMPT CROSSING OF GALACTIC PERIMETER\n");
 		printf("   IS HEREBY *DENIED*.  SHUT DOWN YOUR ENGINES.'\n");
 		printf("   CHIEF ENGINEER SCOTT REPORTS:  'WARP ENGINES SHUT DOWN\n");
-		printf("   AT SECTOR %d,%d OF QUADRANT %d, %d.'", 
+		printf("   AT SECTOR %d, %d OF QUADRANT %d, %d.'", 
 			gameVars->entSect[0], gameVars->entSect[1], 
 			gameVars->entQuad[0], gameVars->entQuad[1]);
 	}
@@ -605,7 +609,9 @@ void maneuverEnergy(GameVariables *gameVars)
   	gameVars->currEnergy = gameVars->currEnergy - gameVars->n - 10;
 
   	if (gameVars->currEnergy >= 0)
+  	{
     	return;
+  	}
 
   	printf("SHIELD CONTROL SUPPLIES ENERGY TO COMPLETE THE MANEUVER.\n\n");
   	gameVars->shields = gameVars->shields + gameVars->currEnergy;
@@ -654,7 +660,7 @@ void shortRangeScan(GameVariables *gameVars)
 	              strcpy(gameVars->condition, "DOCKED");
 	              gameVars->currEnergy = gameVars->startEnergy;
 	              gameVars->torpLeft = gameVars->torpCap;
-	              printf("Shields dropped for docking purposes.\n");
+	              printf("SHIELDS DROPPED FOR DOCKING PURPOSES\n");
 	              gameVars->shields = 0;
 	            }
 	        }
@@ -662,7 +668,7 @@ void shortRangeScan(GameVariables *gameVars)
   	}
   if (gameVars->damage[2] < 0.0)
     {
-      printf("\n*** Short Range Sensors are out ***\n");
+      printf("\n*** SHORT RANGE SENSORS ARE OUT ***\n");
       return;
     }
 
@@ -673,22 +679,22 @@ void shortRangeScan(GameVariables *gameVars)
         putchar(gameVars->quadDisp[i * 24 + j]); 
 
       if (i == 0)
-    printf("    Stardate            %d\n", (int) gameVars->stardateCurr);
+    printf("    STARDATE            %d\n", (int) gameVars->stardateCurr);
       if (i == 1)
-    printf("    Condition           %s\n", gameVars->condition);
+    printf("    CONDITION           %s\n", gameVars->condition);
       if (i == 2)
-    printf("    Quadrant            %d, %d\n",  gameVars->entQuad[0], gameVars->entQuad[1]);
+    printf("    QUADRANT            %d, %d\n",  gameVars->entQuad[0], gameVars->entQuad[1]);
       if (i == 3)
     /* @@@ printf("    Sector              %d, %d\n", cint(s1), cint(s2)); */
-    printf("    Sector              %d, %d\n", (int)gameVars->entSect[0], (int)gameVars->entSect[1]);
+    printf("    SECTOR              %d, %d\n", (int)gameVars->entSect[0], (int)gameVars->entSect[1]);
       if (i == 4)
-    printf("    Photon Torpedoes    %d\n", gameVars->torpLeft);
+    printf("    PHOTON TORPEDOES    %d\n", gameVars->torpLeft);
       if (i == 5)
-    printf("    Total Energy        %d\n", gameVars->currEnergy + gameVars->startEnergy);
+    printf("    TOTAL ENERGY        %d\n", gameVars->currEnergy + gameVars->startEnergy);
       if (i == 6)
-    printf("    Shields             %d\n", gameVars->shields);
+    printf("    SHIELDS             %d\n", gameVars->shields);
       if (i == 7)
-    printf("    Klingons Remaining  %d\n", gameVars->klingLeft);
+    printf("    KLINGONS REMAINING  %d\n", gameVars->klingLeft);
     }
   printf("------------------------\n\n");
 
@@ -725,7 +731,394 @@ for (int i = gameVars->entQuad[0] -1; i <= gameVars->entQuad[0] + 1; i++)
 		printf("\n");
 	}
 printf("    -------------------");	
+}
 
+
+void damageControl(GameVariables *gameVars)
+{ 
+	int authorizeRepair; // a1
+	double d3 = 0.0;	 // not sure..
+	int i;
+
+	if (gameVars->damage[6] < 0.0)
+	{
+	  printf("Damage Control report not available.\n");
+
+	  if (gameVars->dockFlag == 0)
+	    return;
+
+	  d3 = 0.0;
+	  for (i = 1; i <= 8; i++)
+	    if (gameVars->damage[i] < 0.0)
+	      d3 = d3 + .1;
+
+	  if (d3 == 0.0)
+	    return;
+
+	  d3 = d3 + gameVars->repairTime;
+	  if (d3 >= 1.0)
+	    d3 = 0.9;
+
+	  printf("\nTechnicians standing by to effect repairs to your");
+	  /* @@@ printf("ship; Will you authorize the repair order (Y/N)? "); */
+	  printf("ship;\nEstimated time to repair: %4.2f stardates.\n", d3);
+	  printf("Will you authorize the repair order (Y/N)? ");
+
+	  authorizeRepair = getchar();
+
+	  if (authorizeRepair == 'Y' || authorizeRepair == 'y')
+	    {
+	      for (i = 1; i <= 8; i++)
+	        if (gameVars->damage[i] < 0.0)
+	          gameVars->damage[i] = 0.0;
+
+	      gameVars->stardateCurr = gameVars->stardateCurr + d3 + 0.1;
+	    }
+	}
+
+	printf("Device            State of Repair\n");
+
+	for (gameVars->tempPos[0] = 0; gameVars->tempPos[0] < 8; gameVars->tempPos[0]++)
+	{
+	  getDeviceName(gameVars);
+	  printf(gameVars->strResults);
+	  /* @@@ for (i = 1; i < 25 - strlen(strResults); i++) */
+	  for (i = 1; i < 25 - (int)strlen(gameVars->strResults); i++)
+	  printf(" ");
+	  /* @@@ printf("%4.1f\n", d[r1]); */
+	  printf("%4.2f\n", gameVars->damage[gameVars->tempPos[0]]);
+	}
+
+printf("\n");
+} 
+
+
+void libraryComputer(GameVariables *gameVars)
+{
+	char temp[6];
+
+	if (gameVars->damage[8] < 0.0)
+	{
+		printf("Library Computer inoperable\n");
+  		return;
+	}
+
+	printf("Computer active and awating command: ");
+
+	gets(temp);
+	printf("\n");
+
+	if (! strncmp(temp, "0", 1))
+	{
+		galacticRecord(gameVars);
+	}
+	else if (! strncmp(temp, "1", 1))
+	{
+		statusReport(gameVars);
+	}
+	else if (! strncmp(temp, "2", 1))
+	{
+		torpedoData(gameVars);
+	}
+	else if (! strncmp(temp, "3", 1))
+	{
+		navData(gameVars);
+	}
+	else if (! strncmp(temp, "4", 1))
+	{
+		dirdistCalc(gameVars);
+	}
+	else if (! strncmp(temp, "5", 1))
+	{
+		galaxyMap(gameVars);
+	}
+	else
+	{
+		printf("Functions available from Library-Computer:\n\n");
+		printf("   0 = Cumulative Galactic Record\n");
+		printf("   1 = Status Report\n");
+		printf("   2 = Photon Torpedo Data\n");
+		printf("   3 = Starbase Nav Data\n");
+		printf("   4 = Direction/Distance Calculator\n");
+		printf("   5 = Galaxy 'Region Name' Map\n\n");
+	}
+}
+
+
+void galacticRecord(GameVariables *gameVars)
+{
+	int i, j;
+
+	printf("\n     Computer Record of Galaxy for Quadrant %d,%d\n\n", gameVars->entQuad[0], gameVars->entQuad[1]);
+	printf("     1     2     3     4     5     6     7     8\n");
+
+	for (i = 0; i < 8; i++)
+	{ 
+		printf("   ----- ----- ----- ----- ----- ----- ----- -----\n");
+		printf("%d", i);
+		for (j = 0; j < 8; j++)
+		{
+		  	printf("   ");
+
+		  	if (gameVars->galaxyRecord[i][j] == 0)
+	    	{
+		    	printf("***");
+	    	}
+		  	else
+	    	{
+		    	printf("%3.3d", gameVars->galaxyRecord[i][j]);
+	    	}
+		}
+
+		printf("\n");
+	}
+
+	printf("   ----- ----- ----- ----- ----- ----- ----- -----\n\n");
+}
+
+
+void statusReport(GameVariables *gameVars)
+{
+	strcpy(gameVars->tempStr[0], "");
+
+	printf("   Status Report:\n\n");
+
+	if (gameVars->klingLeft > 1)
+	{
+		strcpy(gameVars->tempStr[0], "s");
+	}
+
+	printf("Klingon%s Left: %d\n", gameVars->tempStr[0], gameVars->klingLeft);
+
+	printf("Mission must be completed in %4.1f stardates\n", 
+		.1 * (int)((gameVars->stardateStart + 
+			gameVars->stardateEnd - gameVars->stardateCurr) * 10));
+
+	if (gameVars->starbaseTotal < 1)
+	{
+		printf("Your stupidity has left you on your own in the galaxy\n");
+		printf(" -- you have no starbases left!\n");
+	}
+	else
+	{  
+		strcpy(gameVars->tempStr[0], "s");
+		if (gameVars->starbaseTotal < 2)
+  		{
+	  		strcpy(gameVars->tempStr[0], "");
+  		}
+		printf("The Federation is maintaining %d starbase%s in the galaxy\n",
+	  	gameVars->starbaseTotal, gameVars->tempStr[0]);
+  	}
+
+  printf("\n");
+}
+
+
+
+//8060 REM TORPEDO, BASE NAV, D/D CALCULATOR
+void torpedoData(GameVariables *gameVars)
+{
+  int i;
+  strcpy(gameVars->tempStr[0], "");
+
+  if (gameVars->klingQuad <= 0)
+  {
+    printf("Science Officer Spock reports:\n");
+    printf("  'Sensors show no enemy ships in this quadrant.'\n\n");
+    return;
+  }
+
+  if (gameVars->klingQuad > 1)
+    strcpy(gameVars->tempStr[0], "s");
+ 
+  printf("From Enterprise to Klingon battlecriuser%s:\n\n", gameVars->tempStr[0]);
+
+  for (i = 0; i < 3; i++)
+  {
+    if (gameVars->klingData[i][2] > 0)
+    {
+      	gameVars->warpFactor = gameVars->klingData[i][0];
+      	gameVars->navX  = gameVars->klingData[i][1];
+    	gameVars->course = gameVars->entSect[0];
+		gameVars->deltaCourseWarpFactor  = gameVars->entSect[1];
+
+      	computeVector(gameVars);
+    }
+  }
+}
+
+void navData(GameVariables *gameVars)
+{
+	if (gameVars->starbaseQuadrant <= 0)
+	{
+		printf("Mr. Spock reports,\n");
+		printf("  'Sensors show no starbases in this quadrant.'\n\n");
+		return;
+	}
+
+	gameVars->warpFactor = gameVars->starbaseLocation[0];
+	gameVars->navX  = gameVars->starbaseLocation[1];
+	gameVars->course = gameVars->entSect[0];
+	gameVars->deltaCourseWarpFactor  = gameVars->entSect[1];
+
+	computeVector(gameVars);
+}
+
+void dirdistCalc(GameVariables *gameVars)
+{
+	char temp[6];
+
+	printf("Direction/Distance Calculator\n\n");
+	printf("You are at quadrant %d,%d sector %d,%d\n\n", gameVars->entQuad[0], gameVars->entQuad[1],
+	/* @@@ cint(s1), cint(s2)); */
+	(int)gameVars->entSect[0], (int)gameVars->entSect[1]);
+
+	printf("Please enter initial X coordinate: ");
+	gets(temp);
+	gameVars->course = atoi(temp);
+
+	printf("Please enter initial Y coordinate: ");
+	gets(temp);
+	gameVars->deltaCourseWarpFactor = atoi(temp);
+
+	printf("Please enter final X coordinate: ");
+	gets(temp);
+	gameVars->warpFactor = atoi(temp);
+
+	printf("Please enter final Y coordinate: ");
+	gets(temp);
+	gameVars->navX = atoi(temp);
+
+	computeVector(gameVars);
+}
+
+
+//7390 REM SETUP TO CHANGE CUM GAL RECORD TO GALAXY MAP
+void galaxyMap(GameVariables *gameVars)
+{
+	int i, j, j0;
+
+	gameVars->quadName = 1;
+
+	printf("\n                   The Galaxy\n\n");
+	printf("    1     2     3     4     5     6     7     8\n");
+
+	for (i = 1; i <= 8; i++)
+	{
+		printf("  ----- ----- ----- ----- ----- ----- ----- -----\n");
+
+		printf("%d ", i);
+
+		gameVars->tempQuadCoord[0] = i;
+		gameVars->tempQuadCoord[1] = 1;
+		quadrantName(gameVars);
+
+		j0 = (int)(11 - (strlen(gameVars->strResults) / 2)); //J0=INT(15-.5*LEN(G2$))
+
+		for (j = 0; j < j0; j++)
+		{
+			printf(" ");
+		}
+
+		printf(gameVars->strResults);
+
+		for (j = 0; j < j0; j++)
+	  	{
+			printf(" ");
+	  	}
+
+		if (! (strlen(gameVars->strResults) % 2))
+  		{
+	  		printf(" ");
+  		}
+
+		gameVars->tempQuadCoord[1] = 5;
+		quadrantName(gameVars);
+
+		j0 = (int)(12 - (strlen(gameVars->strResults) / 2));
+
+		for (j = 0; j < j0; j++)
+		{	
+			printf(" ");
+		}
+		printf(gameVars->strResults); 
+
+		printf("\n");
+	}
+
+	printf("  ----- ----- ----- ----- ----- ----- ----- -----\n\n");
+
+}
+
+
+void computeVector(GameVariables *gameVars)
+{
+	gameVars->navX = gameVars->navX - gameVars->deltaCourseWarpFactor;
+	gameVars->deltaCourseWarpFactor = gameVars->course - gameVars->warpFactor; // delta of course and warp factor
+
+	if (gameVars->navX <= 0.0)
+	{
+		if (gameVars->deltaCourseWarpFactor > 0.0)
+		{    
+		  gameVars->course = 3.0;
+		  sub2(gameVars);
+		  return;
+		}
+		else
+		{
+		  gameVars->course = 5.0;
+		  sub1(gameVars);
+		  return;
+		}
+	}
+	else if (gameVars->deltaCourseWarpFactor < 0.0)
+	{
+		gameVars->course = 7.0;
+		sub2(gameVars);
+		return;
+	}
+	else
+	{
+		gameVars->course = 1.0;
+		sub1(gameVars);
+		return;
+	}
+}
+
+void sub1(GameVariables *gameVars)
+{
+	gameVars->navX = fabs(gameVars->navX);
+	gameVars->deltaCourseWarpFactor = fabs(gameVars->deltaCourseWarpFactor);
+
+	if (gameVars->deltaCourseWarpFactor <= gameVars->navX)
+		{
+		printf("  DIRECTION = %4.2f\n", gameVars->course + (gameVars->deltaCourseWarpFactor / gameVars->navX));
+		}
+	else
+		{
+		printf("  DIRECTION = %4.2f\n", gameVars->course + (((gameVars->deltaCourseWarpFactor * 2) - gameVars->navX) / gameVars->deltaCourseWarpFactor));
+		}
+
+	printf("  DISTANCE = %4.2f\n\n", (gameVars->navX > gameVars->deltaCourseWarpFactor) ? gameVars->navX : gameVars->deltaCourseWarpFactor);
+}
+
+void sub2(GameVariables *gameVars)
+{
+	gameVars->navX = fabs(gameVars->navX);
+	gameVars->deltaCourseWarpFactor = fabs(gameVars->deltaCourseWarpFactor);
+
+	if (gameVars->deltaCourseWarpFactor >= gameVars->navX)
+		{
+		printf("  DIRECTION = %4.2f\n", gameVars->course + (gameVars->navX / gameVars->deltaCourseWarpFactor));
+		}
+	else
+	/* @@@ printf("  DIRECTION = %4.2f\n\n", gameVars->course + (((gameVars->navX * 2) - a) / gameVars->navX)); */
+		{
+		printf("  DIRECTION = %4.2f\n", gameVars->course + (((gameVars->navX * 2) - gameVars->deltaCourseWarpFactor) / gameVars->navX));
+		}
+
+	/* @@@ printf("  DISTANCE = %4.2f\n", (gameVars->navX > a) ? gameVars->navX : a); */
+	printf("  DISTANCE = %4.2f\n\n", (gameVars->navX > gameVars->deltaCourseWarpFactor) ? gameVars->navX : gameVars->deltaCourseWarpFactor);
 }
 
 
@@ -754,12 +1147,12 @@ void resignCommision(GameVariables *gameVars)
 
 void wonGame(GameVariables *gameVars)
 {
-  	printf("Congradulations, Captain!  The last Klingon Battle Cruiser\n");
-  	printf("menacing the Federation has been destoyed.\n\n");
+  	printf("CONGRATULATION, CAPTAIN!   THE LAST KLINGON BATTLE CRUISER\n");
+  	printf("MENACING THE FEDERATION HAS BEEN DESTROYED.\n\n");
  
   	if (gameVars->stardateCurr - gameVars->stardateStart > 0)
     {
-    	printf("Your efficiency rating is %4.2f\n", 1000 * pow(gameVars->klingStart / (gameVars->stardateCurr - gameVars->stardateStart), 2));
+    	printf("YOUR EFFICIENCY RATING IS %4.2f\n", 1000 * pow(gameVars->klingStart / (gameVars->stardateCurr - gameVars->stardateStart), 2));
     }
 
   	endOfGame(gameVars);
@@ -771,10 +1164,9 @@ void endOfGame(GameVariables *gameVars)
 
   if (gameVars->starbaseTotal > 0)
     {
-      	printf("The Federation is in need of a new starship commander");
-      	printf(" for a similar mission.\n");
-      	printf("If there is a volunteer, let him step forward and");
-      	printf(" enter 'aye': ");
+      	printf("THE FEDERATION IS IN NEED OF A NEW STARSHIP COMMANDER");
+      	printf(" FOR A SIMILAR MISSION -- IF THERE IS A VOLUNTEER,");
+      	printf("LET HIM STEP FORWARD AND ENTER 'AYE' ");
 
       	gets(temp);
       	printf("\n");
@@ -814,6 +1206,7 @@ void klingonsMove(GameVariables *gameVars)
   klingonsShoot(gameVars);
 }
 
+//5990 REM KLINGONS SHOOTING
 void klingonsShoot(GameVariables *gameVars)
 {
 	int hit, i;
@@ -956,10 +1349,9 @@ void insertInQuadrant(GameVariables *gameVars)
 
 void getDeviceName(GameVariables *gameVars)
 {
-	static char *deviceName[] = {
-	    "", "Warp Engines","Short Range Sensors","Long Range Sensors",
-	    "Phaser Control","Photon Tubes","Damage Control","Sheild Control",
-	    "Library-Computer"};
+	static char *deviceName[] = {"Warp Engines","Short Range Sensors",
+				"Long Range Sensors","Phaser Control","Photon Tubes",
+				"Damage Control","Sheild Control","Library-Computer"};
 
   	if (gameVars->tempPos[0] < 0 || gameVars->tempPos[0] > 8)
 	{
@@ -1027,7 +1419,7 @@ void quadrantName(GameVariables *gameVars)
     }
 }
 
-void midStr(char *a, char *b, int x, int y)
+void midStr(char *str1, char *str2, int i, int j)
 {
 	/* 
 		MID$( sexpr, aexpr [, aexpr] )
@@ -1043,14 +1435,14 @@ void midStr(char *a, char *b, int x, int y)
  		* C Port Copyright (C) 1996  <Chris Nystrom>
 	*/
 
-  --x;
-  y += x;
+  --i;
+  j += i;
 
-  /* @@@ while (x < y && x <= strlen(b)) */
-  while (x < y && x <= (int)strlen(b))
-    *a++ = *(b + x++);
+  /* @@@ while (i < j && i <= strlen(b)) */
+  while (i < j && i <= (int)strlen(str2))
+    *str1++ = *(str2 + i++);
 
-  *a = '\0';
+  *str1 = '\0';
 }
 
 

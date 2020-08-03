@@ -45,6 +45,8 @@ typedef struct
 	double warpFactor;									// w1
 	double navX, navY, navX1, navX2;					// x, y, x1, x2
 	double damage[8];									// d[8]
+	double course;										// c1
+	double deltaCourseWarpFactor;						// a
 
 	//strings
 	char objInSector[4];								// A$
