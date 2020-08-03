@@ -21,7 +21,7 @@
 	void eventHandler(GameVariables *gameVars);
 	void commandHelp(void);
 	void outOfBounds (GameVariables *gameVars);
-	void short_range_scan(GameVariables *gameVars);
+	void shortRangeScan(GameVariables *gameVars);
 	void longRangeScan (GameVariables *gameVars);
 	void courseNavigation(GameVariables *gameVars);
 	void findEmptyPlace(GameVariables *gameVars);

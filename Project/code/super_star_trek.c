@@ -57,7 +57,7 @@ int game(GameVariables *gameVars)
 	*/
 	initialize(gameVars);
 	newQuadrant(gameVars);
-	short_range_scan(gameVars);
+	shortRangeScan(gameVars);
 
 }
 

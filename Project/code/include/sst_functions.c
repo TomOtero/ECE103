@@ -432,7 +432,7 @@ void outOfBounds (GameVariables *gameVars)
 }
 
 
-void short_range_scan(GameVariables *gameVars)
+void shortRangeScan(GameVariables *gameVars)
 {
 	int i, j;
 	strcpy(gameVars->condition, "GREEN");
