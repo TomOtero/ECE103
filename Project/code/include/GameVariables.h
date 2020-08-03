@@ -8,15 +8,6 @@
 
 */
 
-#ifndef	GAME_REF
-#define GAME_REF
-typedef struct
-{
-	const char *quadName[16];
-	const char *sectName[4];
-}GameReferences;
-#endif
-
 #ifndef	GAME_VARS
 #define GAME_VARS
 typedef struct
