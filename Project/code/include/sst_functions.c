@@ -432,6 +432,84 @@ void outOfBounds (GameVariables *gameVars)
 }
 
 
+void short_range_scan(GameVariables *gameVars)
+{
+	int i, j;
+	strcpy(gameVars->condition, "GREEN");
+
+ 	if (gameVars->currEnergy < gameVars->startEnergy * .1)
+ 	{
+    	strcpy(gameVars->condition, "YELLOW");
+ 	}
+
+	if (gameVars->klingQuad > 0)
+	{
+	    strcpy(gameVars->condition, "*RED*");
+	}
+
+	//Clear dockFlag
+	gameVars->dockFlag = 0;
+
+  /* @@@ for (i = s1 - 1; i <= s1 + 1; i++) */
+  	for (i = (int)(gameVars->entSect[0]); i <= (int)(gameVars->entSect[0]); i++)
+  	{
+    /* @@@ for (j = s2 - 1; j <= s2 + 1; j++) */
+    	for (j = (int)(gameVars->entSect[1]); j <= (int)(gameVars->entSect[1]); j++)
+      	{	
+	      	if (i >= 1 && i <= 8 && j >= 1 && j <= 8)
+	        {
+	          strcpy(gameVars->objInSector, ">!<");
+	          gameVars->tempSectCoord[0] = i;
+	          gameVars->tempSectCoord[1] = j;
+	          stringCompare(gameVars);
+	          if (gameVars->compare == 1)
+	            {
+	              gameVars->dockFlag = 1;
+	              strcpy(gameVars->condition, "DOCKED");
+	              gameVars->currEnergy = gameVars->startEnergy;
+	              gameVars->torpLeft = gameVars->torpCap;
+	              printf("Shields dropped for docking purposes.\n");
+	              gameVars->shields = 0;
+	            }
+	        }
+	    }
+  	}
+  if (gameVars->damage[2] < 0.0)
+    {
+      printf("\n*** Short Range Sensors are out ***\n");
+      return;
+    }
+
+  printf("------------------------\n");
+  for (i = 0; i < 8; i++)
+    {
+      for (j = 0; j < 24; j++)
+        putchar(gameVars->quadDisp[i * 24 + j]); 
+
+      if (i == 0)
+    printf("    Stardate            %d\n", (int) gameVars->stardateCurr);
+      if (i == 1)
+    printf("    Condition           %s\n", gameVars->condition);
+      if (i == 2)
+    printf("    Quadrant            %d, %d\n",  gameVars->entQuad[0], gameVars->entQuad[1]);
+      if (i == 3)
+    /* @@@ printf("    Sector              %d, %d\n", cint(s1), cint(s2)); */
+    printf("    Sector              %d, %d\n", (int)gameVars->entSect[0], (int)gameVars->entSect[1]);
+      if (i == 4)
+    printf("    Photon Torpedoes    %d\n", gameVars->torpLeft);
+      if (i == 5)
+    printf("    Total Energy        %d\n", gameVars->currEnergy + gameVars->startEnergy);
+      if (i == 6)
+    printf("    Shields             %d\n", gameVars->shields);
+      if (i == 7)
+    printf("    Klingons Remaining  %d\n", gameVars->klingLeft);
+    }
+  printf("------------------------\n\n");
+
+  return;
+}
+
+
 void longRangeScan (GameVariables *gameVars)
 {
 if (gameVars->damage[3] < 0)
@@ -608,10 +686,20 @@ int findRandom(void)
 	return(get_rand(8));
 }
 
-/* Returns an integer from 1 to iSpread */
+
 int get_rand(int iSpread)
 {
-  return((rand() % iSpread) + 1);
+	/* 	Returns an integer from 1 to iSpread 
+		
+		Due to its effectiveness, this function is a direct copy from:
+
+		* startrek.c
+		*
+ 		* Super Star Trek Classic (v1.1)
+ 		* Retro Star Trek Game 
+ 		* C Port Copyright (C) 1996  <Chris Nystrom>
+	*/
+  	return((rand() % iSpread) + 1);
 }
 
 

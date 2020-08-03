@@ -59,7 +59,7 @@ typedef struct
 
 	//strings
 	char objInSector[4];								// A$
-	char condition[7];
+	char condition[7];									// C$
 	char quadDisp[194];									// $Q
 	char tempStr[2][10];								// X$ X0$
 	char command[6];
