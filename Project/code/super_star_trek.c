@@ -58,6 +58,7 @@ int game(GameVariables *gameVars)
 	initialize(gameVars);
 	newQuadrant(gameVars);
 	shortRangeScan(gameVars);
+	eventHandler(gameVars);
 
 }
 

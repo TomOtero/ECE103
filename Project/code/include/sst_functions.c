@@ -138,7 +138,7 @@ void initialize(GameVariables *gameVars)
 		  {
 		  	gameVars->klingQuad = 0;
             gameVars->galaxyRecord[i][j] = 0;
-		    gameVars->tempPos[0] = get_rand(100);
+		    gameVars->tempPos[0] = getRand(100);
 		    if (gameVars->tempPos[0]  > 98)
 		      gameVars->klingQuad = 3;
 		    else if (gameVars->tempPos[0]  > 95)
@@ -149,7 +149,7 @@ void initialize(GameVariables *gameVars)
 		    gameVars->klingLeft = gameVars->klingLeft + gameVars->klingQuad;
 		    gameVars->starbaseQuadrant = 0;
 
-		    if (get_rand(100) > 96)
+		    if (getRand(100) > 96)
 		      gameVars->starbaseQuadrant = 1;
 
 		    gameVars->starbaseTotal = gameVars->starbaseTotal + 
@@ -211,7 +211,7 @@ void newQuadrant(GameVariables *gameVars)
 	gameVars->starbaseQuadrant = 0;
 	gameVars->stars = 0;
 	gameVars->quadName = 0; 
-	gameVars->repairTime = (double) get_rand(100) / 100 / 50;
+	gameVars->repairTime = (double) getRand(100) / 100 / 50;
 	gameVars->galaxyRecord[gameVars->tempQuadCoord[0]][gameVars->tempQuadCoord[1]] = 
 			gameVars->galaxy[gameVars->entQuad[0]][gameVars->entQuad[1]];
 
@@ -275,7 +275,7 @@ void newQuadrant(GameVariables *gameVars)
 
 	      	gameVars->klingData[i][1] = gameVars->tempPos[0];
 	      	gameVars->klingData[i][2] = gameVars->tempPos[1];
-	      	gameVars->klingData[i][3] = 100 + get_rand(200);
+	      	gameVars->klingData[i][3] = 100 + getRand(200);
 	    }
 	}
 
@@ -313,17 +313,20 @@ void eventHandler(GameVariables *gameVars)
 	*/
 
 	//Initialize Time
+	printf("Command? ");
+	gets(gameVars->command);
+  	printf("\n");
 	if(strcmp(gameVars->command,"nav")==0)
 	{
 		printf("nav function\n");
 	}
 	else if (strcmp(gameVars->command,"srs")==0)
 	{
-		printf("srs function\n");		
+		shortRangeScan(gameVars);		
 	}
 	else if (strcmp(gameVars->command,"lrs")==0)
 	{
-		printf("lrs function\n");		
+		longRangeScan(gameVars);		
 	}
 	else if (strcmp(gameVars->command,"pha")==0)
 	{
@@ -601,7 +604,7 @@ void stringCompare(GameVariables *gameVars)
 
   gameVars->quadIndex = ((gameVars->tempSectCoord[1] - 1) * 3) + ((gameVars->tempSectCoord[0] - 1) * 24) + 1;
 
-  mid_str(temp, gameVars->quadDisp, gameVars->quadIndex, 3);
+  midStr(temp, gameVars->quadDisp, gameVars->quadIndex, 3);
 
   i = strncmp(temp, gameVars->quadDisp, 3);
 
@@ -644,7 +647,7 @@ void quadrantName(GameVariables *gameVars)
     }
 }
 
-void mid_str(char *a, char *b, int x, int y)
+void midStr(char *a, char *b, int x, int y)
 {
 	/* 
 		MID$( sexpr, aexpr [, aexpr] )
@@ -683,11 +686,11 @@ double findDistance(GameVariables *gameVars, int index)
 
 int findRandom(void)
 {
-	return(get_rand(8));
+	return(getRand(8));
 }
 
 
-int get_rand(int iSpread)
+int getRand(int iSpread)
 {
 	/* 	Returns an integer from 1 to iSpread 
 		

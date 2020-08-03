@@ -28,12 +28,12 @@
 	void insertInQuadrant(GameVariables *gameVars);
 	void stringCompare(GameVariables *gameVars);
 	void quadrantName(GameVariables *gameVars);
-	void mid_str(char *a, char *b, int x, int y); 
+	void midStr(char *a, char *b, int x, int y); 
 
 	double findDistance(GameVariables *gameVars, int index);
 
 	int findRandom(void);
-	int get_rand(int iSpread);
+	int getRand(int iSpread);
 
 
 
