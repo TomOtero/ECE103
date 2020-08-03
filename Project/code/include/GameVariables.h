@@ -50,9 +50,10 @@ typedef struct
 	char objInSector[4];								//
 	char condition[7];
 	char quadDisp[194];
-	char tempStr[2][10];
+	char tempStr[2][10];								// X$ X0$
 	char command[6];
 	char commandList[9][6];								// A1$
+	char strResults[255];								// sG2
 
 }GameVariables;
 #endif
