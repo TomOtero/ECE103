@@ -26,6 +26,7 @@
 	double findDistance(GameVariables *gameVars, int index);
 
 	int findRandom(void);
+	int get_rand(int iSpread);
 
 
 

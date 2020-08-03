@@ -101,15 +101,15 @@ void clear(GameVariables *gameVars)
 
 	//Initialize strings
 	strcpy(gameVars->tempStr[0], "");
-	strcpy(gameVars->tempStr[1], "IS");
-	const char tempCommandList[9][6] = {{"NAV"},{"SRS"},{"LRS"},
-										{"PHA"},{"TOR"},{"SHE"},
-										{"DAM"},{"COM"},{"XXX"}};
+	strcpy(gameVars->tempStr[1], "is");
+	const char tempCommandList[9][6] = {{"nav"},{"srs"},{"lrs"},
+										{"pha"},{"tor"},{"she"},
+										{"dam"},{"com"},{"xxx"}};
 	memcpy(gameVars->commandList, tempCommandList, sizeof tempCommandList); // 710
 
-	// Initializing arrays 
+	// Initializing arrays // 820
 	memset(gameVars->galaxy,0,sizeof gameVars->galaxy);
-	memset(gameVars->galaxyRecord,0,sizeof gameVars->galaxyRecord);
+	//memset(gameVars->galaxyRecord,0,sizeof gameVars->galaxyRecord);
 	memset(gameVars->klingData,0,sizeof gameVars->klingData);
 
 
@@ -124,29 +124,85 @@ void initialize(GameVariables *gameVars)
 	// Initialize Enterprise
 	gameVars->entQuad[0] = findRandom();
 	gameVars->entQuad[1] = findRandom();
-	gameVars->entSect[0] = findRandom();
-	gameVars->entSect[1] = findRandom();
-	gameVars->damage[0]  = 0;
+	gameVars->entSect[0] = (double)findRandom();
+	gameVars->entSect[1] = (double)findRandom();
+	memset(gameVars->damage,0,sizeof gameVars->damage);
 	static const long tempArray[9][2] = {{0,1}, {-1,1}, {-1,0},		// 530 - 600
 	   								     {-1,-1}, {0-1}, {1,-1},
 								         {1,0}, {1,1}, {0,1}};
 
 	memcpy(gameVars->locationMove, tempArray, sizeof tempArray);
-	//////////////////////////////////
-	//        Debug
-	// for(int i=0; i<9; i++)
-	// {
-	// 	for(int j=0; j<2; j++)
-	// 	{
-	// 		printf("%d", gameVars->locationMove[i][j]); 
-	// 	}
-	// 	printf("\n");
-	// }
-	//////////////////////////////////
-
-
 	
+
+	for (int i = 0; i < 8; i++)
+	{
+		for (int j = 0; j < 8; j++)
+		  {
+		  	gameVars->klingQuad = 0;
+            gameVars->galaxyRecord[i][j] = 0;
+		    gameVars->tempPos[0] = get_rand(100);
+		    if (gameVars->tempPos[0]  > 98)
+		      gameVars->klingQuad = 3;
+		    else if (gameVars->tempPos[0]  > 95)
+		      gameVars->klingQuad = 2;
+		    else if (gameVars->tempPos[0]  > 80)
+		      gameVars->klingQuad = 1;
+
+		    gameVars->klingLeft = gameVars->klingLeft + gameVars->klingQuad;
+		    gameVars->starbaseQuadrant = 0;
+
+		    if (get_rand(100) > 96)
+		      gameVars->starbaseQuadrant = 1;
+
+		    gameVars->starbaseTotal = gameVars->starbaseTotal + 
+		    						gameVars->starbaseQuadrant;
+
+		    gameVars->galaxy[i][j] = gameVars->klingQuad * 100 + 
+		    						gameVars->starbaseQuadrant * 10 + findRandom();
+		  }
+	}
+	if (gameVars->klingLeft > gameVars->stardateEnd)
+	{
+    	gameVars->stardateEnd = gameVars->klingLeft + 1;
+	}
+  	if (gameVars->starbaseTotal == 0)
+    {
+      	if (gameVars->galaxy[gameVars->entQuad[0]][gameVars->entQuad[1]] < 200)
+        {
+	  		gameVars->galaxy[gameVars->entQuad[0]][gameVars->entQuad[1]] = 
+	  			gameVars->galaxy[gameVars->entQuad[0]][gameVars->entQuad[1]] + 100;
+          	gameVars->klingLeft;
+        }
+
+	  	gameVars->galaxy[gameVars->entQuad[0]][gameVars->entQuad[1]] = 
+	  			gameVars->galaxy[gameVars->entQuad[0]][gameVars->entQuad[1]] + 100;
+	  	gameVars->starbaseTotal++;
+
+	  	gameVars->entQuad[0] = findRandom();
+  		gameVars->entQuad[1] = findRandom();
+    }
+
+  	gameVars->klingStart = gameVars->klingLeft;
+
+  	if (gameVars->starbaseTotal != 1)
+    {
+      	strcpy(gameVars->tempStr[0], "s");
+      	strcpy(gameVars->tempStr[1], "are");
+    }
+
+	printf("Your orders are as follows:\n\n");
+	printf("   Destroy the %d Klingon warships which have invaded\n", k9);
+	printf(" the galaxy before they can attack Federation Headquarters\n");
+	printf(" on stardate %d. This gives you %d days. There %s\n",
+	gameVars->stardateStart + gameVars->stardateEnd, gameVars->stardateEnd, gameVars->tempStr[1]);
+	printf(" %d starbase%s in the galaxy for resupplying your ship.\n\n",
+	gameVars->starbaseTotal, gameVars->tempStr[0]);
+
+	printf("Hit any key to accept command. ");
+	getchar();
 }
+
+
 
 void eventHandler(GameVariables *gameVars)
 {
@@ -333,9 +389,13 @@ double findDistance(GameVariables *gameVars, int index)
 
 int findRandom(void)
 {
-	int randReturn = 0;
-	randReturn = rand()*7.98+1.01;
-	return randReturn;
+	return(get_rand(8));
+}
+
+/* Returns an integer from 1 to iSpread */
+int get_rand(int iSpread)
+{
+  return((rand() % iSpread) + 1);
 }
 
 
