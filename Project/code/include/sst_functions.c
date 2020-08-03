@@ -439,7 +439,7 @@ void courseControl(GameVariables *gameVars) //2290 REM COURSE CONTROL BEGINS HER
 	  return;
 	}
 	//2580 REM KLINGONS MOVE/FIRE ON MOVING STARSHIP
-	klingons_move(gameVars);
+	klingonsMove(gameVars);
 
 	repairDamage(gameVars);
 
@@ -461,27 +461,27 @@ void courseControl(GameVariables *gameVars) //2290 REM COURSE CONTROL BEGINS HER
 	q4 = gameVars->entQuad[0];
 	q5 = gameVars->entQuad[0];
 
-	for (i = 1; i <= n; i++)
+	for (i = 1; i <= gameVars->n; i++)
 	{
 		gameVars->entSect[0] = gameVars->entSect[0] + gameVars->navX1;
 	  	gameVars->entSect[1] = gameVars->entSect[1] + gameVars->navX2;
 
-	  	/* @@@ z1 = cint(s1); */
+	  	/* @@@ gameVars->tempSectCoord[0] = cint(s1); */
 		gameVars->tempSectCoord[0] = (int)gameVars->entSect[0];
-		/* @@@ z2 = cint(s2); */
+		/* @@@ gameVars->tempSectCoord[1] = cint(s2); */
 		gameVars->tempSectCoord[1] = (int)gameVars->entSect[1];
 
-	  if (z1 < 1 || z1 >= 9 || z2 < 1 || z2 >= 9)
+	  if (gameVars->tempSectCoord[0] < 1 || gameVars->tempSectCoord[0] >= 9 || gameVars->tempSectCoord[1] < 1 || gameVars->tempSectCoord[1] >= 9)
 	    {
 	      	outOfBounds(gameVars);
-	      	complete_maneuver(gameVars);
+	      	completeManeuver(gameVars);
 	      	return;
 	    }
 
 	  stringCompare(gameVars);
 
 	  //3060 REM BEGIN MOVING STARSHIP
-	  if (z3 != 1) /* Sector not empty */
+	  if (gameVars->compare != 1) /* Sector not empty */
 	    {
 	      	gameVars->entSect[0] = gameVars->entSect[0] + gameVars->navX1;
 	  		gameVars->entSect[1] = gameVars->entSect[1] + gameVars->navX2;
@@ -492,8 +492,38 @@ void courseControl(GameVariables *gameVars) //2290 REM COURSE CONTROL BEGINS HER
 	    }
 	}
 
-	complete_maneuver();
+	completeManeuver(gameVars);
 }
+
+
+void completeManeuver(GameVariables *gameVars)
+{
+	double t8;
+
+	strcpy(gameVars->objInSector, "<*>");
+  	/* @@@ gameVars->tempSectCoord[0] = cint(s1); */
+	gameVars->tempSectCoord[0] = (int)gameVars->entSect[0];
+	/* @@@ gameVars->tempSectCoord[1] = cint(s2); */
+	gameVars->tempSectCoord[1] = (int)gameVars->entSect[1];
+	insertInQuadrant(gameVars);
+
+	maneuverEnergy(gameVars);
+
+	t8 = 1.0;
+
+	if (gameVars->warpFactor < 1.0)
+	t8 = gameVars->warpFactor;
+
+	gameVars->stardateCurr = gameVars->stardateCurr + t8;
+
+	if (gameVars->stardateCurr > gameVars->stardateStart + gameVars->stardateEnd)
+	{	
+		endOfTime(gameVars);
+	}
+
+	shortRangeScan(gameVars);
+}
+
 
 //3490 REM EXCEEDED QUADRANT LIMITS
 void outOfBounds (GameVariables *gameVars)
@@ -557,12 +587,12 @@ void outOfBounds (GameVariables *gameVars)
 		printf("  'PERMISSION TO ATTEMPT CROSSING OF GALACTIC PERIMETER\n");
 		printf("   IS HEREBY *DENIED*.  SHUT DOWN YOUR ENGINES.'\n");
 		printf("   CHIEF ENGINEER SCOTT REPORTS:  'WARP ENGINES SHUT DOWN\n");
-		printf("   AT SECTOR %.1lf,%.1lf OF QUADRANT %d, %d.'", 
+		printf("   AT SECTOR %d,%d OF QUADRANT %d, %d.'", 
 			gameVars->entSect[0], gameVars->entSect[1], 
 			gameVars->entQuad[0], gameVars->entQuad[1]);
 	}
 
-	maneuverEnergy(GameVariables *gameVars);
+	maneuverEnergy(gameVars);
 	if (gameVars->stardateCurr > gameVars->stardateStart + gameVars->stardateEnd)
     	endOfTime(gameVars);
 		gameVars->stardateCurr = gameVars->stardateCurr + 1;
@@ -699,6 +729,66 @@ printf("    -------------------");
 }
 
 
+void shipDestroyed(GameVariables *gameVars)
+{
+	printf("The Enterprise has been destroyed. ");
+	printf("The Federation will be conquered.\n\n");
+
+	endOfTime(gameVars);
+}
+
+void endOfTime(GameVariables *gameVars)
+{
+	printf("It is stardate %d.\n\n", (int) gameVars->stardateCurr);
+
+	resignCommision(gameVars);
+}
+
+void resignCommision(GameVariables *gameVars)
+{
+	printf("There were %d Klingon Battlecruisers left at the", gameVars->klingLeft);
+	printf(" end of your mission.\n\n");
+
+	endOfGame(gameVars);
+}
+
+void wonGame(GameVariables *gameVars)
+{
+  	printf("Congradulations, Captain!  The last Klingon Battle Cruiser\n");
+  	printf("menacing the Federation has been destoyed.\n\n");
+ 
+  	if (gameVars->stardateCurr - gameVars->stardateStart > 0)
+    {
+    	printf("Your efficiency rating is %4.2f\n", 1000 * pow(gameVars->klingStart / (gameVars->stardateCurr - gameVars->stardateStart), 2));
+    }
+
+  	endOfGame(gameVars);
+}
+
+void endOfGame(GameVariables *gameVars)
+{
+  char temp[6];
+
+  if (gameVars->starbaseTotal > 0)
+    {
+      	printf("The Federation is in need of a new starship commander");
+      	printf(" for a similar mission.\n");
+      	printf("If there is a volunteer, let him step forward and");
+      	printf(" enter 'aye': ");
+
+      	gets(temp);
+      	printf("\n");
+
+      	if (! strncmp(temp, "aye", 3))
+      	{
+        	printf("[TODO] NEW GAME\n");
+      	}
+    }
+
+  exit(0);
+}
+
+
 void klingonsMove(GameVariables *gameVars)
 {
   int i;
@@ -708,20 +798,20 @@ void klingonsMove(GameVariables *gameVars)
       if (gameVars->klingData[i][2] > 0)
         {
           strcpy(gameVars->objInSector, "   ");
-          z1 = gameVars->klingData[i][0];
-          z2 = gameVars->klingData[i][1];
+          gameVars->tempSectCoord[0] = gameVars->klingData[i][0];
+          gameVars->tempSectCoord[1] = gameVars->klingData[i][1];
           insertInQuadrant(gameVars);
 
           findEmptyPlace(gameVars);
 
-          gameVars->klingData[i][0] = z1;
-          gameVars->klingData[i][1] = z2;
+          gameVars->klingData[i][0] = gameVars->tempSectCoord[0];
+          gameVars->klingData[i][1] = gameVars->tempSectCoord[1];
           strcpy(gameVars->objInSector, "+K+");
           insertInQuadrant(gameVars);
         }
     }
 
-  klingons_shoot(gameVars);
+  klingonsShoot(gameVars);
 }
 
 void klingonsShoot(GameVariables *gameVars)
@@ -741,7 +831,7 @@ void klingonsShoot(GameVariables *gameVars)
 	{
 	  	if (gameVars->klingData[i][2] > 0)
     	{
-	      	hit = (int) ((gameVars->klingData[i][2] / findDistance(i)) * (2 + rnd()));
+	      	hit = (int) ((gameVars->klingData[i][2] / findDistance(gameVars,i)) * (2 + rnd()));
 	      	gameVars->shields = gameVars->shields - hit;
 	      	/* @@@ gameVars->klingData[i][3] = gameVars->klingData[i][3] / (3 + rnd()); */
 	      	gameVars->klingData[i][2] = (int)(gameVars->klingData[i][2] / (3 + rnd()));
@@ -752,7 +842,7 @@ void klingonsShoot(GameVariables *gameVars)
 	          	if (gameVars->shields <= 0)
 	            {
 	              	printf("\n");
-	              	shipDestroyed();
+	              	shipDestroyed(gameVars);
 	            }
 
           printf("    <Shields down to %d units>\n\n", gameVars->shields);
@@ -791,7 +881,7 @@ void repairDamage(GameVariables *gameVars)
 	  	if (gameVars->damage[i] < 0.0)
     	{
 	      	gameVars->damage[i] = gameVars->damage[i] + repairFactor;
-	      	if (gameVars->damage[i] > -0.1 && d[i] < 0)
+	      	if (gameVars->damage[i] > -0.1 && gameVars->damage[i] < 0)
 	        {
 	        	gameVars->damage[i] = -0.1;
 	        }
@@ -855,7 +945,7 @@ void insertInQuadrant(GameVariables *gameVars)
 {
 	int i, j = 0;
 
-  /* @@@ s8 = ((z2 - 1) * 3) + ((z1 - 1) * 24) + 1; */
+  /* @@@ s8 = ((gameVars->tempSectCoord[1] - 1) * 3) + ((gameVars->tempSectCoord[0] - 1) * 24) + 1; */
 	gameVars->quadIndex = ((int)(gameVars->tempSectCoord[1] - 0.5) * 3) + ((int)(gameVars->tempSectCoord[0] - 0.5) * 24) + 1;
 
 	for (i = gameVars->quadIndex - 1; i <= gameVars->quadIndex + 1; i++)
@@ -876,7 +966,7 @@ void getDeviceName(GameVariables *gameVars)
     	gameVars->tempPos[0] = 0;
 	}
 
-  	strcpy(gameVars->strResults, deviceName[r1]);
+  	strcpy(gameVars->strResults, deviceName[gameVars->tempPos[1]]);
 	return;
 }
 
