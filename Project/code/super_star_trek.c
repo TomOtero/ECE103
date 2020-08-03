@@ -77,7 +77,10 @@ int main()
 	int loopCount = 0;
 	while(mainLoop)
 	{
-		/* This logic is for testing purposes.*/
+		/* 
+		This logic is for testing purposes.
+		REMOVE for final.
+		*/
 		if(loopCount<1)
 		{
 			intro();

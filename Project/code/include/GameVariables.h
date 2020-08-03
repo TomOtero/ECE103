@@ -12,8 +12,6 @@
 #define GAME_VARS
 typedef struct
 {
-	//GameReferences
-	GameReferences gameRef; 
 
 	//ints
 	int dockFlag, damageRepFlag; 						// d0, d1
