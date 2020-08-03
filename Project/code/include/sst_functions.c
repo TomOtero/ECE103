@@ -1,10 +1,8 @@
 /*
 	ECE 103 Engineering Programming
 	Team 9: Tom Otero, Ed Rees, Kevin Deleon
-	Last update: 07/25/20
-
+	Last update: 08/02/20
 */
-
 
 
 #include <stdio.h>
@@ -191,7 +189,7 @@ void initialize(GameVariables *gameVars)
     }
 
 	printf("Your orders are as follows:\n\n");
-	printf("   Destroy the %d Klingon warships which have invaded\n", k9);
+	printf("   Destroy the %d Klingon warships which have invaded\n", gameVars->klingLeft);
 	printf(" the galaxy before they can attack Federation Headquarters\n");
 	printf(" on stardate %d. This gives you %d days. There %s\n",
 	gameVars->stardateStart + gameVars->stardateEnd, gameVars->stardateEnd, gameVars->tempStr[1]);
@@ -200,6 +198,111 @@ void initialize(GameVariables *gameVars)
 
 	printf("Hit any key to accept command. ");
 	getchar();
+}
+
+
+void newQuadrant(GameVariables *gameVars)
+{
+	int i;
+
+	gameVars->tempQuadCoord[0] = gameVars->entQuad[0];
+	gameVars->tempQuadCoord[1] = gameVars->entQuad[1];
+	klingQuad = 0;
+	starbaseQuadrant = 0;
+	stars = 0;
+	quadName = 0; 
+	repairTime = (double) get_rand(100) / 100 / 50;
+	galaxyRecord[ameVars->tempQuadCoord[0]][gameVars->tempQuadCoord[1]] = 
+		galaxy[gameVars->entQuad[0]][gameVars->entQuad[1]];
+
+	if (gameVars->entQuad[0] >= 1 && gameVars->entQuad[0] <= 8 && 
+		gameVars->entQuad[1] >= 1 && gameVars->entQuad[1] <= 8)
+	{
+	  quadrant_name();
+
+	  if (gameVars->stardateStart != gameVars->stardateCurr)
+	    printf("Now entering %s quadrant...\n\n", sG2);
+	  else
+	    {
+	      printf("\nYour mission begins with your starship located\n");
+	      printf("in the galactic quadrant %s.\n\n", sG2);
+	    }
+	}
+
+	/* @@@ k3 = g[q1][q2] * .01; */
+	k3 = (int)(g[q1][q2] * .01);
+	/* @@@ b3 = g[q1][q2] * .1 - 10 * k3; */
+	b3 = (int)(g[q1][q2] * .1 - 10 * k3);
+	s3 = g[q1][q2] - 100 * k3 - 10 * b3;
+
+	if (k3 > 0)
+	{
+	  printf("Combat Area  Condition Red\n");
+
+	  if (s < 200)
+	    printf("Shields Dangerously Low\n");
+	}
+
+	for (i = 1; i <= 3; i++)
+	{
+	  k[i][1] = 0;
+	  k[i][2] = 0;
+	  k[i][3] = 0;
+	}
+
+	for (i = 0; i <= 192; i++)
+	sQ[i] = ' ';
+
+	sQ[193] = '\0';
+
+	/* Position Enterprise, then Klingons, Starbases, and stars */
+
+	strcpy(sA, "<*>");
+	/* @@@ z1 = cint(s1); */
+	z1 = (int)s1;
+	/* @@@ z2 = cint(s2); */
+	z2 = (int)s2;
+	insert_in_quadrant();
+
+	if (k3 > 0)
+	{
+	  for (i = 1; i <= k3; i++)
+	    {
+	      find_empty_place();
+
+	      strcpy(sA, "+K+");
+	      z1 = r1;
+	      z2 = r2;
+	      insert_in_quadrant();
+
+	      k[i][1] = r1;
+	      k[i][2] = r2;
+	      k[i][3] = 100 + get_rand(200);
+	    }
+	}
+
+	if (b3 > 0)
+	{
+	  find_empty_place();
+
+	  strcpy(sA, ">!<");
+	  z1 = r1;
+	  z2 = r2;
+	  insert_in_quadrant();
+
+	  b4 = r1;
+	  b5 = r2;
+	}
+
+	for (i = 1; i <= s3; i++)
+	{
+	  find_empty_place();
+
+	  strcpy(sA, " * ");
+	  z1 = r1;
+	  z2 = r2;
+	  insert_in_quadrant();
+	}
 }
 
 
@@ -374,6 +477,32 @@ void courseNavigation(GameVariables *gameVars)
   	printf("\n");
   	c1 = atof(sTemp);
 
+}
+
+void quadrant_name(GameVariables *gameVars)
+{
+  static char * quad_name[] = {"Antares","Rigel","Procyon","Vega",
+    "Canopus","Altair","Sagittarius","Pollux","Sirius","Deneb","Capella",
+    "Betelgeuse","Aldebaran","Regulus","Arcturus","Spica"};
+
+  static char * sect_name[] = {""," I"," II"," III"," IV"};
+
+  if (z4 < 1 || z4 > 8 || z5 < 1 || z5 > 8)
+    strcpy(sG2, "Unknown");
+
+  if (z5 <= 4)
+    strcpy(sG2, quad_name[z4]);
+  else
+    strcpy(sG2, quad_name[z4+8]);
+
+  if (g5 != 1)
+    {
+      if (z5 > 4)
+      z5 = z5 - 4;
+      strcat(sG2, sect_name[z5]);
+    }
+
+  return;
 }
 
 
