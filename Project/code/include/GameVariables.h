@@ -8,10 +8,21 @@
 
 */
 
+#ifndef	GAME_REF
+#define GAME_REF
+typedef struct
+{
+	const char *quadName[16];
+	const char *sectName[4];
+}GameReferences;
+#endif
+
 #ifndef	GAME_VARS
 #define GAME_VARS
 typedef struct
 {
+	//GameReferences
+	GameReferences gameRef; 
 
 	//ints
 	int dockFlag, damageRepFlag; 						// d0, d1
@@ -47,9 +58,9 @@ typedef struct
 	double damage[8];									// d[8]
 
 	//strings
-	char objInSector[4];								//
+	char objInSector[4];								// A$
 	char condition[7];
-	char quadDisp[194];
+	char quadDisp[194];									// $Q
 	char tempStr[2][10];								// X$ X0$
 	char command[6];
 	char commandList[9][6];								// A1$
@@ -57,3 +68,7 @@ typedef struct
 
 }GameVariables;
 #endif
+
+
+
+

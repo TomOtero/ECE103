@@ -23,7 +23,11 @@
 	void outOfBounds (GameVariables *gameVars);
 	void longRangeScan (GameVariables *gameVars);
 	void courseNavigation(GameVariables *gameVars);
-	void quadrant_name(GameVariables *gameVars);
+	void findEmptyPlace(GameVariables *gameVars);
+	void insertInQuadrant(GameVariables *gameVars);
+	void stringCompare(GameVariables *gameVars);
+	void quadrantName(GameVariables *gameVars);
+	void mid_str(char *a, char *b, int x, int y); 
 
 	double findDistance(GameVariables *gameVars, int index);
 

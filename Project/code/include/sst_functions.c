@@ -207,101 +207,100 @@ void newQuadrant(GameVariables *gameVars)
 
 	gameVars->tempQuadCoord[0] = gameVars->entQuad[0];
 	gameVars->tempQuadCoord[1] = gameVars->entQuad[1];
-	klingQuad = 0;
-	starbaseQuadrant = 0;
-	stars = 0;
-	quadName = 0; 
-	repairTime = (double) get_rand(100) / 100 / 50;
-	galaxyRecord[ameVars->tempQuadCoord[0]][gameVars->tempQuadCoord[1]] = 
-		galaxy[gameVars->entQuad[0]][gameVars->entQuad[1]];
+	gameVars->klingQuad = 0;
+	gameVars->starbaseQuadrant = 0;
+	gameVars->stars = 0;
+	gameVars->quadName = 0; 
+	gameVars->repairTime = (double) get_rand(100) / 100 / 50;
+	gameVars->galaxyRecord[gameVars->tempQuadCoord[0]][gameVars->tempQuadCoord[1]] = 
+			gameVars->galaxy[gameVars->entQuad[0]][gameVars->entQuad[1]];
 
 	if (gameVars->entQuad[0] >= 1 && gameVars->entQuad[0] <= 8 && 
 		gameVars->entQuad[1] >= 1 && gameVars->entQuad[1] <= 8)
 	{
-	  quadrant_name();
+	  quadrantName(gameVars);
 
 	  if (gameVars->stardateStart != gameVars->stardateCurr)
-	    printf("Now entering %s quadrant...\n\n", sG2);
+	    printf("Now entering %s quadrant...\n\n", gameVars->strResults);
 	  else
 	    {
 	      printf("\nYour mission begins with your starship located\n");
-	      printf("in the galactic quadrant %s.\n\n", sG2);
+	      printf("in the galactic quadrant %s.\n\n", gameVars->strResults);
 	    }
 	}
 
-	/* @@@ k3 = g[q1][q2] * .01; */
-	k3 = (int)(g[q1][q2] * .01);
-	/* @@@ b3 = g[q1][q2] * .1 - 10 * k3; */
-	b3 = (int)(g[q1][q2] * .1 - 10 * k3);
-	s3 = g[q1][q2] - 100 * k3 - 10 * b3;
+	gameVars->klingQuad = (int)(gameVars->galaxy[gameVars->entQuad[0]][gameVars->entQuad[1]] * .01);
+	gameVars->starbaseQuadrant = (int)(gameVars->galaxy[gameVars->entQuad[0]][gameVars->entQuad[1]] * .1 - 10 * gameVars->klingQuad);
+	gameVars->stars = gameVars->galaxy[gameVars->entQuad[0]][gameVars->entQuad[1]] - 100 * gameVars->klingQuad - 10 * gameVars->starbaseQuadrant;
 
-	if (k3 > 0)
+	if (gameVars->klingQuad > 0)
 	{
-	  printf("Combat Area  Condition Red\n");
-
-	  if (s < 200)
-	    printf("Shields Dangerously Low\n");
+	  	printf("Combat Area  Condition Red\n");
+	  	if (gameVars->shields < 200)
+	  	{
+	    	printf("Shields Dangerously Low\n");
+		}
 	}
 
-	for (i = 1; i <= 3; i++)
+	for (i = 0; i < 3; i++)
 	{
-	  k[i][1] = 0;
-	  k[i][2] = 0;
-	  k[i][3] = 0;
+	  	gameVars->klingData[i][0] = 0;
+	  	gameVars->klingData[i][1] = 0;
+	  	gameVars->klingData[i][2] = 0;
 	}
 
 	for (i = 0; i <= 192; i++)
-	sQ[i] = ' ';
-
-	sQ[193] = '\0';
-
-	/* Position Enterprise, then Klingons, Starbases, and stars */
-
-	strcpy(sA, "<*>");
-	/* @@@ z1 = cint(s1); */
-	z1 = (int)s1;
-	/* @@@ z2 = cint(s2); */
-	z2 = (int)s2;
-	insert_in_quadrant();
-
-	if (k3 > 0)
 	{
-	  for (i = 1; i <= k3; i++)
+		gameVars->quadDisp[i] = ' ';
+	}
+	gameVars->quadDisp[193] = '\0';
+
+	//Position Enterprise
+	strcpy(gameVars->objInSector, "<*>");
+	gameVars->tempSectCoord[0] = (int)gameVars->entSect[0];
+	gameVars->tempSectCoord[1] = (int)gameVars->entSect[1];
+	insertInQuadrant(gameVars);
+
+	//Position Klingons
+	if (gameVars->klingQuad > 0)
+	{
+	  for (i = 1; i <= gameVars->klingQuad; i++)
 	    {
-	      find_empty_place();
+	      	findEmptyPlace(gameVars);
 
-	      strcpy(sA, "+K+");
-	      z1 = r1;
-	      z2 = r2;
-	      insert_in_quadrant();
+	      	strcpy(gameVars->objInSector, "+K+");
+      		gameVars->tempSectCoord[0] = gameVars->tempPos[0];
+	      	gameVars->tempSectCoord[1] = gameVars->tempPos[1];
+	      	insertInQuadrant(gameVars);
 
-	      k[i][1] = r1;
-	      k[i][2] = r2;
-	      k[i][3] = 100 + get_rand(200);
+	      	gameVars->klingData[i][1] = gameVars->tempPos[0];
+	      	gameVars->klingData[i][2] = gameVars->tempPos[1];
+	      	gameVars->klingData[i][3] = 100 + get_rand(200);
 	    }
 	}
 
-	if (b3 > 0)
+	//Position Starbases
+	if (gameVars->starbaseQuadrant > 0)
 	{
-	  find_empty_place();
+	  findEmptyPlace(gameVars);
 
-	  strcpy(sA, ">!<");
-	  z1 = r1;
-	  z2 = r2;
-	  insert_in_quadrant();
+	  strcpy(gameVars->objInSector, ">!<");
+  		gameVars->tempSectCoord[0] = gameVars->tempPos[0];
+	  	gameVars->tempSectCoord[1] = gameVars->tempPos[1];
+	  insertInQuadrant(gameVars);
 
-	  b4 = r1;
-	  b5 = r2;
+	  gameVars->starbaseLocation[0] = gameVars->tempPos[0];
+	  gameVars->starbaseLocation[1] = gameVars->tempPos[1];
 	}
 
-	for (i = 1; i <= s3; i++)
+	for (i = 1; i <= gameVars->stars; i++)
 	{
-	  find_empty_place();
+	  findEmptyPlace(gameVars);
 
-	  strcpy(sA, " * ");
-	  z1 = r1;
-	  z2 = r2;
-	  insert_in_quadrant();
+	  strcpy(gameVars->objInSector, " * ");
+  		gameVars->tempSectCoord[0] = gameVars->tempPos[0];
+	  	gameVars->tempSectCoord[1] = gameVars->tempPos[1];
+	  insertInQuadrant(gameVars);
 	}
 }
 
@@ -479,30 +478,118 @@ void courseNavigation(GameVariables *gameVars)
 
 }
 
-void quadrant_name(GameVariables *gameVars)
+
+void findEmptyPlace(GameVariables *gameVars)
 {
-  static char * quad_name[] = {"Antares","Rigel","Procyon","Vega",
+  /* @@@ while (z3 == 0) this is a nasty one.*/
+  do
+    {
+      gameVars->tempPos[0] = findRandom();
+      gameVars->tempPos[1] = findRandom();
+
+      strcpy(gameVars->objInSector, "   ");
+
+    	gameVars->tempSectCoord[0] = gameVars->tempPos[0];
+		gameVars->tempSectCoord[1] = gameVars->tempPos[1];
+
+      stringCompare(gameVars);
+    } while (gameVars->compare == 0);
+
+  gameVars->compare = 0;
+}
+
+
+void insertInQuadrant(GameVariables *gameVars)
+{
+	int i, j = 0;
+
+  /* @@@ s8 = ((z2 - 1) * 3) + ((z1 - 1) * 24) + 1; */
+	gameVars->quadIndex = ((int)(gameVars->tempSectCoord[1] - 0.5) * 3) + ((int)(gameVars->tempSectCoord[0] - 0.5) * 24) + 1;
+
+	for (i = gameVars->quadIndex - 1; i <= gameVars->quadIndex + 1; i++)
+	{
+    	gameVars->quadDisp[i] = gameVars->objInSector[j++];
+    }
+}
+
+
+void stringCompare(GameVariables *gameVars)
+{
+  int i;
+  char temp[4];
+
+  gameVars->tempSectCoord[0] = (int)(gameVars->tempSectCoord[0] + 0.5);
+  gameVars->tempSectCoord[1] = (int)(gameVars->tempSectCoord[1] + 0.5);
+
+  gameVars->quadIndex = ((gameVars->tempSectCoord[1] - 1) * 3) + ((gameVars->tempSectCoord[0] - 1) * 24) + 1;
+
+  mid_str(temp, gameVars->quadDisp, gameVars->quadIndex, 3);
+
+  i = strncmp(temp, gameVars->quadDisp, 3);
+
+  if (i == 0)
+    gameVars->compare = 1;
+  else
+    gameVars->compare = 0;
+
+  return;
+}
+
+
+void quadrantName(GameVariables *gameVars)
+{
+    static char * quadName[] = {"","Antares","Rigel","Procyon","Vega",
     "Canopus","Altair","Sagittarius","Pollux","Sirius","Deneb","Capella",
     "Betelgeuse","Aldebaran","Regulus","Arcturus","Spica"};
 
-  static char * sect_name[] = {""," I"," II"," III"," IV"};
+  	static char * sectName[] = {""," I"," II"," III"," IV"};
 
-  if (z4 < 1 || z4 > 8 || z5 < 1 || z5 > 8)
-    strcpy(sG2, "Unknown");
-
-  if (z5 <= 4)
-    strcpy(sG2, quad_name[z4]);
-  else
-    strcpy(sG2, quad_name[z4+8]);
-
-  if (g5 != 1)
-    {
-      if (z5 > 4)
-      z5 = z5 - 4;
-      strcat(sG2, sect_name[z5]);
+  	if (gameVars->tempQuadCoord[0] < 1 || gameVars->tempQuadCoord[0] > 8 || gameVars->tempQuadCoord[1] < 1 || gameVars->tempQuadCoord[1] > 8)
+    {	
+    	strcpy(gameVars->strResults, "Unknown");
     }
+  	if (gameVars->tempQuadCoord[1] <= 4)
+    {
+    	strcpy(gameVars->strResults, quadName[gameVars->tempQuadCoord[0]]);
+    }
+  	else
+    {	
+    	strcpy(gameVars->strResults, quadName[gameVars->tempQuadCoord[0]+8]);
+    }
+  	if (gameVars->quadName != 1)
+    {
+     	if (gameVars->tempQuadCoord[1] > 4)
+      	{
+	      	gameVars->tempQuadCoord[1] = gameVars->tempQuadCoord[1] - 4;
+	      	strcat(gameVars->strResults, sectName[gameVars->tempQuadCoord[1]]);
+      	}
+    }
+}
 
-  return;
+void mid_str(char *a, char *b, int x, int y)
+{
+	/* 
+		MID$( sexpr, aexpr [, aexpr] )
+		Substring of (string, start character, length)
+		https://www.calormen.com/jsbasic/reference.html
+
+		Due to its effectiveness, this function is a direct copy from:
+
+		* startrek.c
+		*
+ 		* Super Star Trek Classic (v1.1)
+ 		* Retro Star Trek Game 
+ 		* C Port Copyright (C) 1996  <Chris Nystrom>
+	*/
+
+  --x;
+  y += x;
+
+  /* @@@ while (x < y && x <= strlen(b)) */
+  while (x < y && x <= (int)strlen(b))
+    *a++ = *(b + x++);
+
+  *a = '\0';
 }
 
 

@@ -18,6 +18,9 @@
 #define GAME_VARS_H
 #include "./include/GameVariables.h"
 #endif
+
+
+
 /*
 NEEDED TO ACTIVATE 80-COLUMN TEXT MODE ON APPLE IIE
 SUPER STARTREK - MAY 16,1978 - REQUIRES 24K MEMORY
@@ -52,9 +55,8 @@ int game(GameVariables *gameVars)
 	The game function will hold the main game loop
 	This will be called in the main loop to start a new game
 	*/
-
-	printf("\ngame loop\n");
 	initialize(gameVars);
+	newQuadrant(gameVars);
 
 }
 
