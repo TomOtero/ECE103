@@ -12,6 +12,8 @@
 #define GAME_VARS
 typedef struct
 {
+	//bool
+	bool running;										// used for the main loop
 
 	//ints
 	int dockFlag, damageRepFlag; 						// d0, d1

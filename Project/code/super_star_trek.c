@@ -49,7 +49,7 @@ BY USING "?" INSTEAD OF "PRINT " WHEN ENTERING LINES
 
 
 
-int game(GameVariables *gameVars)
+bool game(GameVariables *gameVars)
 {
 	/*
 	The game function will hold the main game loop
@@ -59,7 +59,6 @@ int game(GameVariables *gameVars)
 	newQuadrant(gameVars);
 	shortRangeScan(gameVars);
 	eventHandler(gameVars);
-
 }
 
 
@@ -73,26 +72,12 @@ int main()
 	// Struct for game variables
 	GameVariables gameVars;
 
-	bool mainLoop = true;
+	gameVars.running = true;
 	int loopCount = 0;
-	while(mainLoop)
+	while(gameVars.running)
 	{
-		/* 
-		This logic is for testing purposes.
-		REMOVE for final.
-		*/
-		if(loopCount<1)
-		{
-			intro();
-			game(&gameVars);
-		}
-		else
-		{
-			mainLoop = false;
-		}
-		loopCount++;
+		intro();
+		game(&gameVars);
 	}
-	printf("E N D\n"); // debug message
-
 	return EXIT_SUCCESS;
 }

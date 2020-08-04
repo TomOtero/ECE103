@@ -26,7 +26,11 @@
 	void maneuverEnergy(GameVariables *gameVars);
 	void shortRangeScan(GameVariables *gameVars);
 	void longRangeScan (GameVariables *gameVars);
+	void phaserControl(GameVariables *gameVars);
+	void photonTorpedoes(GameVariables *gameVars);
+	void torpedoHit(GameVariables *gameVars);
 	void damageControl(GameVariables *gameVars);
+	void shieldControl(GameVariables *gameVars);
 	void libraryComputer(GameVariables *gameVars);
 	void galacticRecord(GameVariables *gameVars);
 	void statusReport(GameVariables *gameVars);

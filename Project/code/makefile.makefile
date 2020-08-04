@@ -4,7 +4,7 @@ FILES = super_star_trek.c $(IDIR)sst_functions.c
 OUT_EXE = sst.exe
 
 build: $(FILES)
-		$(CC) -o $(OUT_EXE) $(FILES)
+		$(CC) -o $(OUT_EXE) $(FILES) -std=c99 -Wall -pedantic
 
 super_star_trek: super_star_trek.o sst_functions.o
 	$(CC) super_star_trek.o sst_functions.o -o sst.exe
