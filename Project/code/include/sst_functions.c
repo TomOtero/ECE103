@@ -275,7 +275,7 @@ void initialize(GameVariables *gameVars)
 		  {
 		  	gameVars->klingQuad = 0;
             gameVars->galaxyRecord[i][j] = 0;
-		    gameVars->tempPos[0] = getRand(100);
+		    gameVars->tempPos[0] = getRandRange(100);
 		    if (gameVars->tempPos[0]  > 98)
 		      gameVars->klingQuad = 3;
 		    else if (gameVars->tempPos[0]  > 95)
@@ -286,7 +286,7 @@ void initialize(GameVariables *gameVars)
 		    gameVars->klingLeft = gameVars->klingLeft + gameVars->klingQuad;
 		    gameVars->starbaseQuadrant = 0;
 
-		    if (getRand(100) > 96)
+		    if (getRandRange(100) > 96)
 		      gameVars->starbaseQuadrant = 1;
 
 		    gameVars->starbaseTotal = gameVars->starbaseTotal + 
@@ -341,6 +341,7 @@ void initialize(GameVariables *gameVars)
 void newQuadrant(GameVariables *gameVars)
 {
 /*
+1310 REM HERE ANY TIME NEW QUADRANT ENTERED
 1320 Z4=Q1 : Z5=Q2 : K3=0 : B3=0 : S3=0 : G5=0 : D4=.5*RND(1) : Z(Q1,Q2)=G(Q1,Q2)
 1390 IF Q1<1 OR Q1>8 OR Q2<1 OR Q2>8 THEN 1600
 1430 GOSUB 9030 : PRINT : IF T0<>T THEN 1490
@@ -361,7 +362,7 @@ void newQuadrant(GameVariables *gameVars)
 	gameVars->starbaseQuadrant = 0;
 	gameVars->stars = 0;
 	gameVars->quadName = 0; 
-	gameVars->repairTime = (double) (getRand(100)/100)/2; // D4=.5*RND(1) //sets to a value 0 - 1 then takes half
+	gameVars->repairTime = (double) (getRandRange(100)/100)/2; // D4=.5*RND(1) //sets to a value 0 - 1 then takes half
 	gameVars->galaxyRecord[gameVars->tempQuadCoord[0]][gameVars->tempQuadCoord[1]] = 
 			gameVars->galaxy[gameVars->entQuad[0]][gameVars->entQuad[1]];
 
@@ -425,7 +426,7 @@ void newQuadrant(GameVariables *gameVars)
 
 	      	gameVars->klingData[i][1] = gameVars->tempPos[0];
 	      	gameVars->klingData[i][2] = gameVars->tempPos[1];
-	      	gameVars->klingData[i][3] = 100 + getRand(200);
+	      	gameVars->klingData[i][3] = 100 + getRandRange(200);
 	    }
 	}
 
@@ -507,7 +508,7 @@ void courseControl(GameVariables *gameVars) //2290 REM COURSE CONTROL BEGINS HER
 	  return;
 	}
 
-	gameVars->n = cint(gameVars->warpFactor * 8.0); //N=INT(W1*8+.5)
+	gameVars->n = doubleToInt(gameVars->warpFactor * 8.0); //N=INT(W1*8+.5)
 
 	if (gameVars->currEnergy - gameVars->n < 0)
 	{
@@ -552,9 +553,9 @@ void courseControl(GameVariables *gameVars) //2290 REM COURSE CONTROL BEGINS HER
 		gameVars->entSect[0] = gameVars->entSect[0] + gameVars->navX1;
 	  	gameVars->entSect[1] = gameVars->entSect[1] + gameVars->navX2;
 
-	  	/* @@@ gameVars->tempSectCoord[0] = cint(s1); */
+	  	/* @@@ gameVars->tempSectCoord[0] = doubleToInt(s1); */
 		gameVars->tempSectCoord[0] = (int)gameVars->entSect[0];
-		/* @@@ gameVars->tempSectCoord[1] = cint(s2); */
+		/* @@@ gameVars->tempSectCoord[1] = doubleToInt(s2); */
 		gameVars->tempSectCoord[1] = (int)gameVars->entSect[1];
 
 	  if (gameVars->tempSectCoord[0] < 1 || gameVars->tempSectCoord[0] >= 9 || gameVars->tempSectCoord[1] < 1 || gameVars->tempSectCoord[1] >= 9)
@@ -587,9 +588,9 @@ void completeManeuver(GameVariables *gameVars)
 	double t8;
 
 	strcpy(gameVars->objInSector, "<*>");
-  	/* @@@ gameVars->tempSectCoord[0] = cint(s1); */
+  	/* @@@ gameVars->tempSectCoord[0] = doubleToInt(s1); */
 	gameVars->tempSectCoord[0] = (int)gameVars->entSect[0];
-	/* @@@ gameVars->tempSectCoord[1] = cint(s2); */
+	/* @@@ gameVars->tempSectCoord[1] = doubleToInt(s2); */
 	gameVars->tempSectCoord[1] = (int)gameVars->entSect[1];
 	insertInQuadrant(gameVars);
 
@@ -611,29 +612,48 @@ void completeManeuver(GameVariables *gameVars)
 }
 
 
-//3490 REM EXCEEDED QUADRANT LIMITS
 void outOfBounds (GameVariables *gameVars)
 {
+/*
+3490 REM EXCEEDED QUADRANT LIMITS
+3500 X=8*Q1+X+N*X1 : Y=8*Q2+Y+N*X2 : Q1=INT(X/8) : Q2=INT(Y/8) : S1=INT(X-Q1*8)
+3550 S2=INT(Y-Q2*8) : IF S1=0 THEN Q1=Q1-1 : S1=8
+3590 IF S2=0 THEN Q2=Q2-1 : S2=8
+3620 X5=0 : IF Q1<1 THEN X5=1 : Q1=1 : S1=1
+3670 IF Q1>8 THEN X5=1 : Q1=8 : S1=8
+3710 IF Q2<1 THEN X5=1 : Q2=1 : S2=1
+3750 IF Q2>8 THEN X5=1 : Q2=8 : S2=8
+3790 IF X5=0 THEN 3860
+3800 PRINT "LT. UHURA REPORTS MESSAGE FROM STARFLEET COMMAND : "
+3810 PRINT "  'PERMISSION TO ATTEMPT CROSSING OF GALACTIC PERIMETER"
+3820 PRINT "  IS HEREBY *DENIED*.  SHUT DOWN YOUR ENGINES.'"
+3830 PRINT "CHIEF ENGINEER SCOTT REPORTS  'WARP ENGINES SHUT DOWN"
+3840 PRINT "  AT SECTOR";S1;",";S2;"OF QUADRANT";Q1;",";Q2;".'"
+3850 IF T>T0+T9 THEN 6220
+3860 IF 8*Q1+Q2=8*Q4+Q5 THEN 3370
+3870 T=T+1 : GOSUB 3910 : GOTO 1320
+*/
 	int outOfBoundsFlag = 0;
 	gameVars->n = (int)(gameVars->warpFactor * 8.0);
 	
 	gameVars->navX = (8 * gameVars->entQuad[0]) + 
-					  gameVars->navX + (gameVars->n * gameVars->navX1); // not sure where the "n" is being pulled from
+					  gameVars->navX + (gameVars->n * gameVars->navX1);
 	gameVars->navY = (8 * gameVars->entQuad[1]) + 
-					  gameVars->navY + (gameVars->n * gameVars->navY); // again not sure where the n is pulled
-	
-	gameVars->entQuad[0] = gameVars->navX/8;
-	gameVars->entQuad[1] = gameVars->navY/8;
-	gameVars->entSect[0] = gameVars->navX - gameVars->entQuad[0]/8;
-	gameVars->entSect[1] = gameVars->navY - gameVars->entQuad[1]/8;
-	
-	if (gameVars->entSect[0] == 0)
+					  gameVars->navY + (gameVars->n * gameVars->navY);
+
+	gameVars->entQuad[0] = (int)(gameVars->navX/8);
+	gameVars->entQuad[1] = (int)(gameVars->navY/8);
+	gameVars->entSect[0] = (int)(gameVars->navX - gameVars->entQuad[0]/8);
+	gameVars->entSect[1] = (int)(gameVars->navY - gameVars->entQuad[1]/8);
+	printf("[DEBUG] gameVars->entSect[0]: %f\n", gameVars->entSect[0]);
+	printf("[DEBUG] gameVars->entSect[1]:%f\n", gameVars->entSect[1]);
+	if (gameVars->entSect[0] == 0) //3550 ...  IF S1=0 THEN Q1=Q1-1 : S1=8
 	{
 		gameVars->entQuad[0] = gameVars->entQuad[0] - 1;
 		gameVars->entSect[0] = 8.0;
 	}
 	
-	if (gameVars->entSect[1] == 0)
+	if (gameVars->entSect[1] == 0) //3590 IF S2=0 THEN Q2=Q2-1 : S2=8
 	{
 		gameVars->entQuad[1] = gameVars->entQuad[1] - 1;
 		gameVars->entSect[1] = 8.0;
@@ -767,7 +787,7 @@ void shortRangeScan(GameVariables *gameVars)
       if (i == 2)
     printf("    QUADRANT            %d, %d\n",  gameVars->entQuad[0], gameVars->entQuad[1]);
       if (i == 3)
-    /* @@@ printf("    Sector              %d, %d\n", cint(s1), cint(s2)); */
+    /* @@@ printf("    Sector              %d, %d\n", doubleToInt(s1), doubleToInt(s2)); */
     printf("    SECTOR              %d, %d\n", (int)gameVars->entSect[0], (int)gameVars->entSect[1]);
       if (i == 4)
     printf("    PHOTON TORPEDOES    %d\n", gameVars->torpLeft);
@@ -962,8 +982,8 @@ void photonTorpedoes(GameVariables *gameVars)
 	gameVars->navX = gameVars->entSect[0] + gameVars->navX1;
 	gameVars->navY = gameVars->entSect[1] + gameVars->navX2;
 
-	torpX = cint(gameVars->navX); /* @@@ note: this is a true integer round in the MS BASIC version */
-	torpY = cint(gameVars->navY); /* @@@ note: this is a true integer round in the MS BASIC version */
+	torpX = doubleToInt(gameVars->navX); /* @@@ note: this is a true integer round in the MS BASIC version */
+	torpY = doubleToInt(gameVars->navY); /* @@@ note: this is a true integer round in the MS BASIC version */
 
 	gameVars->outOfBoundsFlag = 0;
 
@@ -989,8 +1009,8 @@ void photonTorpedoes(GameVariables *gameVars)
 	  gameVars->navX = gameVars->navX + gameVars->navX1;
 	  gameVars->navY = gameVars->navY + gameVars->navX2;
 
-	  torpX = cint(gameVars->navX); /* @@@ note: this is a true integer round in the MS BASIC version */
-	  torpY = cint(gameVars->navY); /* @@@ note: this is a true integer round in the MS BASIC version */
+	  torpX = doubleToInt(gameVars->navX); /* @@@ note: this is a true integer round in the MS BASIC version */
+	  torpY = doubleToInt(gameVars->navY); /* @@@ note: this is a true integer round in the MS BASIC version */
 	}
 
 	printf("Torpedo Missed\n\n");
@@ -1002,8 +1022,8 @@ void torpedoHit(GameVariables *gameVars)
 {
 	int i, torpX, torpY;
 
-	torpX = cint(gameVars->navX); /* @@@ note: this is a true integer round in the MS BASIC version */
-	torpY = cint(gameVars->navY); /* @@@ note: this is a true integer round in the MS BASIC version */
+	torpX = doubleToInt(gameVars->navX); /* @@@ note: this is a true integer round in the MS BASIC version */
+	torpY = doubleToInt(gameVars->navY); /* @@@ note: this is a true integer round in the MS BASIC version */
 
 	gameVars->compare = 0;
 
@@ -1087,7 +1107,7 @@ void damageControl(GameVariables *gameVars)
 	    return;
 
 	  d3 = 0.0;
-	  for (i = 1; i <= 8; i++)
+	  for (i = 0; i < 8; i++)
 	    if (gameVars->damage[i] < 0.0)
 	      d3 = d3 + .1;
 
@@ -1352,7 +1372,7 @@ void dirdistCalc(GameVariables *gameVars)
 
 	printf("Direction/Distance Calculator\n\n");
 	printf("You are at quadrant %d,%d sector %d,%d\n\n", gameVars->entQuad[0], gameVars->entQuad[1],
-	/* @@@ cint(s1), cint(s2)); */
+	/* @@@ doubleToInt(s1), doubleToInt(s2)); */
 	(int)gameVars->entSect[0], (int)gameVars->entSect[1]);
 
 	printf("Please enter initial X coordinate: ");
@@ -1612,7 +1632,6 @@ void klingonsShoot(GameVariables *gameVars)
     	{
 	      	hit = (int) ((gameVars->klingData[i][2] / findDistance(gameVars,i)) * (2 + rnd()));
 	      	gameVars->shields = gameVars->shields - hit;
-	      	/* @@@ gameVars->klingData[i][3] = gameVars->klingData[i][3] / (3 + rnd()); */
 	      	gameVars->klingData[i][2] = (int)(gameVars->klingData[i][2] / (3 + rnd()));
 
 	      	printf("%d unit hit on Enterprise from sector ", hit);
@@ -1702,7 +1721,11 @@ void repairDamage(GameVariables *gameVars)
 
 void findEmptyPlace(GameVariables *gameVars)
 {
-  /* @@@ while (gameVars->compare == 0) this is a nasty one.*/
+/*
+8580 REM FIND EMPTY PLACE IN QUADRANT (FOR THINGS)
+8590 R1=FNR(1) : R2=FNR(1) : A$="   " : Z1=R1 : Z2=R2 : GOSUB 8830 : IF Z3=0 THEN 8590
+8600 RETURN
+*/
   do
     {
       gameVars->tempPos[0] = findRandom();
@@ -1722,11 +1745,23 @@ void findEmptyPlace(GameVariables *gameVars)
 
 void insertInQuadrant(GameVariables *gameVars)
 {
+
+/*
+8660 REM INSERT IN STRING ARRAY FOR QUADRANT
+8670 S8=INT(Z2-.5)*3+INT(Z1-.5)*24+1
+8675 IF  LEN(A$)<>3 THEN  PRINT "ERROR" : STOP
+8680 IF S8=1 THEN Q$=A$+RIGHT$(Q$,189) : RETURN
+8690 IF S8=190 THEN Q$=LEFT$(Q$,189)+A$ : RETURN
+8700 Q$=LEFT$(Q$,S8-1)+A$+RIGHT$(Q$,190-S8) : RETURN
+*/
 	int i, j = 0;
 
-  /* @@@ s8 = ((gameVars->tempSectCoord[1] - 1) * 3) + ((gameVars->tempSectCoord[0] - 1) * 24) + 1; */
 	gameVars->quadIndex = ((int)(gameVars->tempSectCoord[1] - 0.5) * 3) + ((int)(gameVars->tempSectCoord[0] - 0.5) * 24) + 1;
-
+	if(strlen(gameVars->objInSector)!=3)  //IF  LEN(A$)<>3 THEN  PRINT "ERROR"
+	{
+		printf("ERROR\n");
+		printf("[DEBUG] Error in insertInQuadrant()\n");	
+	}
 	for (i = gameVars->quadIndex - 1; i <= gameVars->quadIndex + 1; i++)
 	{
     	gameVars->quadDisp[i] = gameVars->objInSector[j++];
@@ -1735,6 +1770,23 @@ void insertInQuadrant(GameVariables *gameVars)
 
 void getDeviceName(GameVariables *gameVars)
 {
+/*
+8780 REM PRINTS DEVICE NAME
+8790 ON R1 GOTO 8792,8794,8796,8798,8800,8802,8804,8806
+8792 G2$="WARP ENGINES" : RETURN
+8794 G2$="SHORT RANGE SENSORS" : RETURN
+8796 G2$="LONG RANGE SENSORS" : RETURN
+8798 G2$="PHASER CONTROL" : RETURN
+8800 G2$="PHOTON TUBES" : RETURN
+8802 G2$="DAMAGE CONTROL" : RETURN
+8804 G2$="SHIELD CONTROL" : RETURN
+8806 G2$="LIBRARY-COMPUTER" : RETURN
+8820 REM STRING COMPARISON IN QUADRANT ARRAY
+8830 Z1=INT(Z1+.5) : Z2=INT(Z2+.5) : S8=(Z2-1)*3+(Z1-1)*24+1 : Z3=0
+8890 IF MID$(Q$,S8,3)<>A$ THEN RETURN
+8900 Z3=1 : RETURN
+*/
+
 	static char *deviceName[] = {"Warp Engines","Short Range Sensors",
 				"Long Range Sensors","Phaser Control","Photon Tubes",
 				"Damage Control","Sheild Control","Library-Computer"};
@@ -1867,6 +1919,9 @@ void midStr(char *str1, char *str2, int i, int j)
 
 double findDistance(GameVariables *gameVars, int index)
 {
+/*
+	470 DEF FND(D)=SQR((K(I,1)-S1)^2+(K(I,2)-S2)^2)
+*/
 	double dist = 0.0;
 	dist = sqrt(pow((gameVars->klingData[index][0]-gameVars->entSect[0]),2)+
 			pow((gameVars->klingData[index][1]-gameVars->entSect[1]),2));
@@ -1897,11 +1952,11 @@ double rnd(void)
 
 int findRandom(void)
 {
-	return(getRand(8));
+	return(getRandRange(8));
 }
 
 
-int getRand(int max)
+int getRandRange(int max)
 {
 /*
 Used to change the range for rand()	assuming min of 0
@@ -1909,27 +1964,16 @@ Used to change the range for rand()	assuming min of 0
 https://stackoverflow.com/questions/1202687/how-do-i-get-a-specific-range-of-numbers-from-rand
 
 */
-
-
   	return((rand() % max) + 1);
 }
 
-int cint (double d)
+int doubleToInt (double dubs)
 {
-	/* 	Round off floating point numbers instead of truncating 
-		
-		Due to its effectiveness, this function is a direct copy from:
+	//INT(Z1+.5) <-- This gets repeated a lot 
+  	int num;
 
-		* startrek.c
-		*
- 		* Super Star Trek Classic (v1.1)
- 		* Retro Star Trek Game 
- 		* C Port Copyright (C) 1996  <Chris Nystrom>
-	*/
-  	int i;
+  	num = (int) (dubs + 0.5);
 
-  	i = (int) (d + 0.5);
-
-  	return(i);
+  	return(num);
 }
 
