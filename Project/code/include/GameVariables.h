@@ -1,7 +1,7 @@
 /*
 	ECE 103 Engineering Programming
 	Team 9: Tom Otero, Ed Rees, Kevin Deleon
-	Last update: 07/25/20
+	Last update: 08/07/20
 
 	This file contains the Struct of game variables for the 
 	super_star_trek.c and function files.
@@ -14,7 +14,7 @@ typedef struct
 {
 	//bool
 	bool running;										// used for the main loop
-
+	bool currGame;										// used for the eventHandler loop
 	//ints
 	int dockFlag, damageRepFlag; 						// d0, d1
 	int currEnergy, startEnergy;						// e, e0	
@@ -37,7 +37,7 @@ typedef struct
 	int galaxyRecord[8][8];								// z[8][8]
 	int klingData[3][3];								// k[3][3]
 	int locationMove[9][2];								// c[9][2]
-	int outOfBoundsFlag;
+	int outOfBoundsFlag;								// x5
 	int n;												// Number of sectors to travel //2490
 	
 	//doubles

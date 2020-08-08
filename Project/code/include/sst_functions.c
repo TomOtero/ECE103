@@ -93,6 +93,18 @@ void eventHandler(GameVariables *gameVars)
 
 void commandHelp(void)
 {
+/*
+2160 NEXT I : PRINT "ENTER ONE OF THE FOLLOWING : "
+2180 PRINT "  NAV  (TO SET COURSE)"
+2190 PRINT "  SRS  (FOR SHORT RANGE SENSOR SCAN)"
+2200 PRINT "  LRS  (FOR LONG RANGE SENSOR SCAN)"
+2210 PRINT "  PHA  (TO FIRE PHASERS)"
+2220 PRINT "  TOR  (TO FIRE PHOTON TORPEDOES)"
+2230 PRINT "  SHE  (TO RAISE OR LOWER SHIELDS)"
+2240 PRINT "  DAM  (FOR DAMAGE CONTROL REPORTS)"
+2250 PRINT "  COM  (TO CALL ON LIBRARY-COMPUTER)"
+2260 PRINT "  XXX  (TO RESIGN YOUR COMMAND)" : PRINT : GOTO  1990
+*/
       printf("Enter one of the following:\n\n");
       printf("  NAV  (TO SET COURSE)\n");
       printf("  SRS  (FOR SHORT RANGE SENSOR SCAN)\n");
@@ -106,15 +118,24 @@ void commandHelp(void)
       printf("\n");
 }
 
-
+// Original Functions 
 void intro(void)
 {
 	/*
 	This function displays the intro mesgameVars->objInSectorge and asks if user
 	wants to display the instructions.
 
-	TODO: Update the instructions to not be "test.txt"
+	*/
 
+	/*
+220 PRINT : PRINT : PRINT : PRINT : PRINT : PRINT : PRINT : PRINT : PRINT : PRINT : PRINT
+221 PRINT "                                    ,------*------,"
+222 PRINT "                    ,-------------   '---  ------'"
+223 PRINT "                     '-------- --'      / /"
+224 PRINT "                         ,---' '-------/ /--,"
+225 PRINT "                          '----------------'" : PRINT
+226 PRINT "                    THE USS ENTERPRISE --- NCC-1701"
+227 PRINT : PRINT : PRINT : PRINT : PRINT
 	*/
 	char resp[1];
 
@@ -156,6 +177,16 @@ void intro(void)
 
 void clear(GameVariables *gameVars)
 {
+/*
+260 REM CLEAR 600
+270 Z$="                         "
+330 DIM G(8,8),C(9,2),K(3,3),N(3),Z(8,8),D(8)
+370 T=INT(RND(1)*20+20)*100 : T0=T : T9=25+INT(RND(1)*10) : D0=0 : E=3000 : E0=E //done
+440 P=10 : P0=P : S9=200 : S=0 : B9=2 : K9=0 : X$="" : X0$=" IS "
+470 DEF FND(D)=SQR((K(I,1)-S1)^2+(K(I,2)-S2)^2)
+475 DEF FNR(R)=INT(RND(R)*7.98+1.01)
+*/
+
 	//Initializing time
 	gameVars->stardateCurr		=(int)(rand()*20+20)*100;  	// T
 	gameVars->stardateStart		=gameVars->stardateCurr;	// T0
@@ -174,7 +205,7 @@ void clear(GameVariables *gameVars)
 
 	//Initialize strings
 	strcpy(gameVars->tempStr[0], "");
-	strcpy(gameVars->tempStr[1], "is");
+	strcpy(gameVars->tempStr[1], "IS");
 	const char tempCommandList[9][6] = {{"nav"},{"srs"},{"lrs"},
 										{"pha"},{"tor"},{"she"},
 										{"dam"},{"com"},{"xxx"}};
@@ -191,6 +222,16 @@ void clear(GameVariables *gameVars)
 
 void initialize(GameVariables *gameVars)
 {
+/*
+480 REM INITIALIZE ENTERPRISE'S POSITION
+490 Q1=FNR(1) : Q2=FNR(1) : S1=FNR(1) : S2=FNR(1)
+530 FOR I=1 TO 9 : C(I,1)=0 : C(I,2)=0 : NEXT I
+540 C(3,1)=-1 : C(2,1)=-1 : C(4,1)=-1 : C(4,2)=-1 : C(5,2)=-1 : C(6,2)=-1
+600 C(1,2)=1 : C(2,2)=1 : C(6,1)=1 : C(7,1)=1 : C(8,1)=1 : C(8,2)=1 : C(9,2)=1
+670 FOR I=1 TO 8 : D(I)=0 : NEXT I
+710 A1$="NAVSRSLRSPHATORSHEDAMCOMXXX"
+*/
+
 	// Clear game vars to default
 	clear(gameVars);
 
@@ -206,6 +247,27 @@ void initialize(GameVariables *gameVars)
 
 	memcpy(gameVars->locationMove, tempArray, sizeof tempArray);
 	
+/*
+810 REM SETUP WHAT EXISTS IN GALAXY . . .
+815 REM K3= # KLINGONS  B3= # STARBASES  S3 = # STARS
+820 FOR I=1 TO 8 : FOR J=1 TO 8 : K3=0 : Z(I,J)=0 : R1=RND(1)
+850 IF R1>.98 THEN K3=3 : K9=K9+3 : GOTO 980
+860 IF R1>.95 THEN K3=2 : K9=K9+2 : GOTO 980
+870 IF R1>.80 THEN K3=1 : K9=K9+1
+980 B3=0 : IF RND(1)>.96 THEN B3=1 : B9=B9+1
+1040 G(I,J)=K3*100+B3*10+FNR(1) : NEXT J : NEXT I : IF K9>T9 THEN T9=K9+1
+1100 IF B9<>0 THEN 1200
+1150 IF G(Q1,Q2)<200 THEN G(Q1,Q2)=G(Q1,Q2)+120 : K9=K9+1
+1160 B9=1 : G(Q1,Q2)=G(Q1,Q2)+10 : Q1=FNR(1) : Q2=FNR(1)
+1200 K7=K9 : IF B9<>1 THEN X$="S" : X0$=" ARE "
+1230 PRINT "YOUR ORDERS ARE AS FOLLOWS : "
+1240 PRINT "   DESTROY THE ";K9;" KLINGON WARSHIPS WHICH HAVE INVADED"
+1252 PRINT "   THE GALAXY BEFORE THEY CAN ATTACK FEDERATION HEADQUARTERS"
+1260 PRINT "   ON STARDATE ";T0+T9;". THIS GIVES YOU ";T9;" DAYS. THERE";X0$
+1272 PRINT "   ";B9;" STARBASE";X$;" IN THE GALAXY FOR RESUPPLYING YOUR SHIP."
+1280 PRINT : REM PRINT "HIT ANY KEY EXCEPT RETURN WHEN READY TO ACCEPT COMMAND"
+1300 I=RND(1) : REM IF INP(1)=13 THEN 1300
+*/
 
 	for (int i = 0; i < 8; i++)
 	{
@@ -244,7 +306,7 @@ void initialize(GameVariables *gameVars)
         {
 	  		gameVars->galaxy[gameVars->entQuad[0]][gameVars->entQuad[1]] = 
 	  			gameVars->galaxy[gameVars->entQuad[0]][gameVars->entQuad[1]] + 100;
-          	gameVars->klingLeft;
+          	gameVars->klingLeft++;
         }
 
 	  	gameVars->galaxy[gameVars->entQuad[0]][gameVars->entQuad[1]] = 
@@ -278,20 +340,33 @@ void initialize(GameVariables *gameVars)
 
 void newQuadrant(GameVariables *gameVars)
 {
+/*
+1320 Z4=Q1 : Z5=Q2 : K3=0 : B3=0 : S3=0 : G5=0 : D4=.5*RND(1) : Z(Q1,Q2)=G(Q1,Q2)
+1390 IF Q1<1 OR Q1>8 OR Q2<1 OR Q2>8 THEN 1600
+1430 GOSUB 9030 : PRINT : IF T0<>T THEN 1490
+1460 PRINT "YOUR MISSION BEGINS WITH YOUR STARSHIP LOCATED"
+1470 PRINT "IN THE GALACTIC QUADRANT, '";G2$;"'." : GOTO 1500
+1490 PRINT "NOW ENTERING ";G2$;" QUADRANT . . ."
+1500 PRINT : K3=INT(G(Q1,Q2)*.01) : B3=INT(G(Q1,Q2)*.1)-10*K3
+1540 S3=G(Q1,Q2)-100*K3-10*B3 : IF K3=0 THEN 1590
+1560 PRINT "COMBAT AREA      CONDITION RED" : IF S>200 THEN 1590
+1580 PRINT "   SHIELDS DANGEROUSLY LOW"
+1590 FOR I=1 TO 3 : K(I,1)=0 : K(I,2)=0 : NEXT I
+1600 FOR I=1 TO 3 : K(I,3)=0 : NEXT I : Q$=Z$+Z$+Z$+Z$+Z$+Z$+Z$+LEFT$(Z$,17)
+*/
 	int i;
-
 	gameVars->tempQuadCoord[0] = gameVars->entQuad[0];
 	gameVars->tempQuadCoord[1] = gameVars->entQuad[1];
 	gameVars->klingQuad = 0;
 	gameVars->starbaseQuadrant = 0;
 	gameVars->stars = 0;
 	gameVars->quadName = 0; 
-	gameVars->repairTime = (double) getRand(100) / 100 / 50;
+	gameVars->repairTime = (double) (getRand(100)/100)/2; // D4=.5*RND(1) //sets to a value 0 - 1 then takes half
 	gameVars->galaxyRecord[gameVars->tempQuadCoord[0]][gameVars->tempQuadCoord[1]] = 
 			gameVars->galaxy[gameVars->entQuad[0]][gameVars->entQuad[1]];
 
-	if (gameVars->entQuad[0] >= 1 && gameVars->entQuad[0] <= 8 && 
-		gameVars->entQuad[1] >= 1 && gameVars->entQuad[1] <= 8)
+	if (gameVars->entQuad[0] >= 1 || gameVars->entQuad[0] <= 8 || 
+		gameVars->entQuad[1] >= 1 || gameVars->entQuad[1] <= 8)
 	{
 	  quadrantName(gameVars);
 
@@ -384,7 +459,7 @@ void courseControl(GameVariables *gameVars) //2290 REM COURSE CONTROL BEGINS HER
 {
 	int i;
 	/* @@@ int c2, c3, q4, q5; */
-	int q4, q5; 			// No idea what these are used for...
+	// int q4, q5; 			// No idea what these are used for...
 	char temp[6];
 	// double course;
 	strcpy(gameVars->tempStr[0], "8");
@@ -457,18 +532,20 @@ void courseControl(GameVariables *gameVars) //2290 REM COURSE CONTROL BEGINS HER
 	gameVars->tempSectCoord[1] = (int)gameVars->entSect[1];
 	insertInQuadrant(gameVars);
 
-	gameVars->navX1 = gameVars->locationMove[1][(int)gameVars->course] + 
-		(gameVars->locationMove[1][(int)gameVars->course + 1] - 
-		gameVars->locationMove[1][(int)gameVars->course]) * (gameVars->course - (int)gameVars->course);
+	gameVars->navX1 = gameVars->locationMove[(int)gameVars->course][0] + 
+		(gameVars->locationMove[(int)gameVars->course + 1][0] - 
+		gameVars->locationMove[(int)gameVars->course][0]) * 
+		(gameVars->course - (int)gameVars->course);
 	
-	gameVars->navX2 = gameVars->locationMove[2][(int)gameVars->course] + 
-		(gameVars->locationMove[2][(int)gameVars->course + 1] - 
-		gameVars->locationMove[2][(int)gameVars->course]) * (gameVars->course - (int)gameVars->course);
+	gameVars->navX2 = gameVars->locationMove[(int)gameVars->course][1] + 
+		(gameVars->locationMove[(int)gameVars->course + 1][1] - 
+		gameVars->locationMove[(int)gameVars->course][1]) * 
+		(gameVars->course - (int)gameVars->course);
 
 	gameVars->navX = gameVars->entSect[0];
 	gameVars->navY = gameVars->entSect[1];
-	q4 = gameVars->entQuad[0];
-	q5 = gameVars->entQuad[0];
+	// q4 = gameVars->entQuad[0];
+	// q5 = gameVars->entQuad[0];
 
 	for (i = 1; i <= gameVars->n; i++)
 	{
@@ -592,11 +669,11 @@ void outOfBounds (GameVariables *gameVars)
 	
     if (outOfBoundsFlag == 1)
 	{
-		printf("   LT. UHURA REPORTS MESgameVars->objInSectorGE FROM STARFLEET COMMAND : \n");
+		printf("   LT. UHURA REPORTS MESSAGE FROM STARFLEET COMMAND : \n");
 		printf("   'PERMISSION TO ATTEMPT CROSSING OF GALACTIC PERIMETER\n");
 		printf("   IS HEREBY *DENIED*.  SHUT DOWN YOUR ENGINES.'\n");
 		printf("   CHIEF ENGINEER SCOTT REPORTS:  'WARP ENGINES SHUT DOWN\n");
-		printf("   AT SECTOR %d, %d OF QUADRANT %d, %d.'", 
+		printf("   AT SECTOR %d, %d OF QUADRANT %d, %d.'\n", 
 			gameVars->entSect[0], gameVars->entSect[1], 
 			gameVars->entQuad[0], gameVars->entQuad[1]);
 	}
@@ -836,9 +913,8 @@ void phaserControl(GameVariables *gameVars)
 
 void photonTorpedoes(GameVariables *gameVars)
 {
-	/* @@@ int c2, c3, torpX, torpY, x5; */
-	int torpX, torpY, x5; //Still have no idea what x5 is supposed to represent
 	char temp[6];
+	int torpX, torpY; 
 
 	if (gameVars->torpLeft <= 0)
 	{
@@ -874,13 +950,13 @@ void photonTorpedoes(GameVariables *gameVars)
 	gameVars->currEnergy = gameVars->currEnergy - 2;
 	gameVars->torpLeft--;
 
-	gameVars->navX1 = gameVars->locationMove[0][(int)gameVars->course] + 
-			(gameVars->locationMove[0][(int)gameVars->course + 1] - 
-			gameVars->locationMove[0][(int)gameVars->course]) * 
+	gameVars->navX1 = gameVars->locationMove[(int)gameVars->course][0] + 
+			(gameVars->locationMove[(int)gameVars->course + 1][0] - 
+			gameVars->locationMove[(int)gameVars->course][0]) * 
 			(gameVars->course - (int)gameVars->course);
-	gameVars->navX2 = gameVars->locationMove[1][(int)gameVars->course] + 
-			(gameVars->locationMove[1][(int)gameVars->course + 1] - 
-			gameVars->locationMove[1][(int)gameVars->course]) * 
+	gameVars->navX2 = gameVars->locationMove[(int)gameVars->course][1] + 
+			(gameVars->locationMove[(int)gameVars->course + 1][1] - 
+			gameVars->locationMove[(int)gameVars->course][1]) * 
 			(gameVars->course - (int)gameVars->course);
 
 	gameVars->navX = gameVars->entSect[0] + gameVars->navX1;
@@ -889,7 +965,7 @@ void photonTorpedoes(GameVariables *gameVars)
 	torpX = cint(gameVars->navX); /* @@@ note: this is a true integer round in the MS BASIC version */
 	torpY = cint(gameVars->navY); /* @@@ note: this is a true integer round in the MS BASIC version */
 
-	x5 = 0;
+	gameVars->outOfBoundsFlag = 0;
 
 	printf("Torpedo Track:\n");
 
@@ -1478,12 +1554,14 @@ void endOfGame(GameVariables *gameVars)
       	printf("\n");
       	if (! strncmp(temp, "aye", 3))
       	{
-        	printf("[TODO] NEW GAME\n");
+      		//This breaks the eventHandler loop 
+        	gameVars->currGame = false;
       	}
       	else
       	{
       		printf("\nMAY THE FORCE BE WITH YOU FRODO!\n");
       		gameVars->running = false;
+      		gameVars->currGame = false;
       	}
     }
 }
@@ -1699,11 +1777,40 @@ void stringCompare(GameVariables *gameVars)
 
 void quadrantName(GameVariables *gameVars)
 {
-    static char * quadName[] = {"","Antares","Rigel","Procyon","Vega",
+/*
+9010 REM QUADRANT NAME IN G2$ FROM Z4,Z5 (=Q1,Q2)
+9020 REM CALL WITH G5=1 TO GET REGION NAME ONLY
+9030 IF Z5<=4 THEN ON Z4 GOTO 9040,9050,9060,9070,9080,9090,9100,9110
+9035 GOTO 9120
+9040 G2$="ANTARES" : GOTO 9210
+9050 G2$="RIGEL" : GOTO 9210
+9060 G2$="PROCYON" : GOTO 9210
+9070 G2$="VEGA" : GOTO 9210
+9080 G2$="CANOPUS" : GOTO 9210
+9090 G2$="ALTAIR" : GOTO 9210
+9100 G2$="SAGITTARIUS" : GOTO 9210
+9110 G2$="POLLUX" : GOTO 9210
+9120 ON Z4 GOTO 9130,9140,9150,9160,9170,9180,9190,9200
+9130 G2$="SIRIUS" : GOTO 9210
+9140 G2$="DENEB" : GOTO 9210
+9150 G2$="CAPELLA" : GOTO 9210
+9160 G2$="BETELGEUSE" : GOTO 9210
+9170 G2$="ALDEBARAN" : GOTO 9210
+9180 G2$="REGULUS" : GOTO 9210
+9190 G2$="ARCTURUS" : GOTO 9210
+9200 G2$="SPICA"
+9210 IF G5<>1 THEN ON Z5 GOTO 9230,9240,9250,9260,9230,9240,9250,9260
+9220 RETURN
+9230 G2$=G2$+" I" : RETURN
+9240 G2$=G2$+" II" : RETURN
+9250 G2$=G2$+" III" : RETURN
+9260 G2$=G2$+" IV" : RETURN
+*/
+    static char * quadName[] = {"Antares","Rigel","Procyon","Vega",
     "Canopus","Altair","gameVars->objInSectorgittarius","Pollux","Sirius","Deneb","Capella",
     "Betelgeuse","Aldebaran","Regulus","Arcturus","Spica"};
 
-  	static char * sectName[] = {""," I"," II"," III"," IV"};
+  	static char * sectName[] = {" I"," II"," III"," IV"};
 
   	if (gameVars->tempQuadCoord[0] < 1 || gameVars->tempQuadCoord[0] > 8 || gameVars->tempQuadCoord[1] < 1 || gameVars->tempQuadCoord[1] > 8)
     {	
@@ -1726,6 +1833,9 @@ void quadrantName(GameVariables *gameVars)
       	}
     }
 }
+
+
+// Other functions
 
 void midStr(char *str1, char *str2, int i, int j)
 {
@@ -1791,19 +1901,17 @@ int findRandom(void)
 }
 
 
-int getRand(int iSpread)
+int getRand(int max)
 {
-	/* 	Returns an integer from 1 to iSpread 
-		
-		Due to its effectiveness, this function is a direct copy from:
+/*
+Used to change the range for rand()	assuming min of 0
 
-		* startrek.c
-		*
- 		* Super Star Trek Classic (v1.1)
- 		* Retro Star Trek Game 
- 		* C Port Copyright (C) 1996  <Chris Nystrom>
-	*/
-  	return((rand() % iSpread) + 1);
+https://stackoverflow.com/questions/1202687/how-do-i-get-a-specific-range-of-numbers-from-rand
+
+*/
+
+
+  	return((rand() % max) + 1);
 }
 
 int cint (double d)

@@ -49,16 +49,21 @@ BY USING "?" INSTEAD OF "PRINT " WHEN ENTERING LINES
 
 
 
-bool game(GameVariables *gameVars)
+void game(GameVariables *gameVars)
 {
 	/*
 	The game function will hold the main game loop
 	This will be called in the main loop to start a new game
 	*/
+	intro();
 	initialize(gameVars);
 	newQuadrant(gameVars);
 	shortRangeScan(gameVars);
-	eventHandler(gameVars);
+	gameVars->currGame = true;
+	while(gameVars->currGame)
+	{
+		eventHandler(gameVars);
+	}
 }
 
 
@@ -73,10 +78,8 @@ int main()
 	GameVariables gameVars;
 
 	gameVars.running = true;
-	int loopCount = 0;
 	while(gameVars.running)
 	{
-		intro();
 		game(&gameVars);
 	}
 	return EXIT_SUCCESS;
