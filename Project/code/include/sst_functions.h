@@ -60,8 +60,8 @@
 	double rnd(void);
 
 	int findRandom(void);
-	int getRand(int iSpread);
-	int cint (double d);
+	int getRandRange(int iSpread);
+	int doubleToInt (double dubs);
 
 
 

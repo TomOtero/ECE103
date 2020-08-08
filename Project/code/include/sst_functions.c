@@ -643,17 +643,17 @@ void outOfBounds (GameVariables *gameVars)
 
 	gameVars->entQuad[0] = (int)(gameVars->navX/8);
 	gameVars->entQuad[1] = (int)(gameVars->navY/8);
-	gameVars->entSect[0] = (int)(gameVars->navX - gameVars->entQuad[0]/8);
-	gameVars->entSect[1] = (int)(gameVars->navY - gameVars->entQuad[1]/8);
+	gameVars->entSect[0] = (gameVars->navX - gameVars->entQuad[0]/8);
+	gameVars->entSect[1] = (gameVars->navY - gameVars->entQuad[1]/8);
 	printf("[DEBUG] gameVars->entSect[0]: %f\n", gameVars->entSect[0]);
 	printf("[DEBUG] gameVars->entSect[1]:%f\n", gameVars->entSect[1]);
-	if (gameVars->entSect[0] == 0) //3550 ...  IF S1=0 THEN Q1=Q1-1 : S1=8
+	if ((int)gameVars->entSect[0] == 0) //3550 ...  IF S1=0 THEN Q1=Q1-1 : S1=8
 	{
 		gameVars->entQuad[0] = gameVars->entQuad[0] - 1;
 		gameVars->entSect[0] = 8.0;
 	}
 	
-	if (gameVars->entSect[1] == 0) //3590 IF S2=0 THEN Q2=Q2-1 : S2=8
+	if ((int)gameVars->entSect[1] == 0) //3590 IF S2=0 THEN Q2=Q2-1 : S2=8
 	{
 		gameVars->entQuad[1] = gameVars->entQuad[1] - 1;
 		gameVars->entSect[1] = 8.0;
@@ -694,24 +694,33 @@ void outOfBounds (GameVariables *gameVars)
 		printf("   IS HEREBY *DENIED*.  SHUT DOWN YOUR ENGINES.'\n");
 		printf("   CHIEF ENGINEER SCOTT REPORTS:  'WARP ENGINES SHUT DOWN\n");
 		printf("   AT SECTOR %d, %d OF QUADRANT %d, %d.'\n", 
-			gameVars->entSect[0], gameVars->entSect[1], 
+			(int)gameVars->entSect[0], (int)gameVars->entSect[1], 
 			gameVars->entQuad[0], gameVars->entQuad[1]);
 	}
 
 	maneuverEnergy(gameVars);
+	printf("[DEBUG] here2\n");
 	if (gameVars->stardateCurr > gameVars->stardateStart + gameVars->stardateEnd)
     	endOfTime(gameVars);
 		gameVars->stardateCurr = gameVars->stardateCurr + 1;
 		newQuadrant(gameVars);
 }
 
-//3900 REM MANEUVER ENERGY S/R **
+
 void maneuverEnergy(GameVariables *gameVars)
 {
+/*
+3900 REM MANEUVER ENERGY S/R **
+3910 E=E-N-10 : IF E>=0 THEN RETURN
+3930 PRINT "SHIELD CONTROL SUPPLIES ENERGY TO COMPLETE THE MANEUVER."
+3940 S=S+E : E=0 : IF S<=0 THEN S=0
+*/
+	printf("[DEBUG] maneuverEnergy()\n");
   	gameVars->currEnergy = gameVars->currEnergy - gameVars->n - 10;
 
   	if (gameVars->currEnergy >= 0)
   	{
+  		printf("[DEBUG]  if (gameVars->currEnergy >= 0)\n");
     	return;
   	}
 
@@ -721,6 +730,7 @@ void maneuverEnergy(GameVariables *gameVars)
 
   	if (gameVars->shields <= 0)
   	{
+  		printf("[DEBUG] if (gameVars->shields <= 0)\n");
     	gameVars->shields = 0;
     }
 }	
@@ -803,41 +813,72 @@ void shortRangeScan(GameVariables *gameVars)
   return;
 }
 
-//3990 REM LONG RANGE SENSOR SCAN CODE
+
 void longRangeScan (GameVariables *gameVars)
 {
-if (gameVars->damage[3] < 0)
+/*
+4000 IF D(3)<0 THEN PRINT "LONG RANGE SENSORS ARE INOPERABLE" : GOTO 1990
+4030 PRINT "LONG RANGE SCAN FOR QUADRANT ";Q1;",";Q2
+4040 O1$="    -------------------" : PRINT O1$
+4060 FOR I=Q1-1 TO Q1+1 : N(1)=-1 : N(2)=-2 : N(3)=-3 : FOR J=Q2-1 TO Q2+1
+4120 IF I>0 AND I<9 AND J>0 AND J<9 THEN N(J-Q2+2)=G(I,J) : Z(I,J)=G(I,J)
+4180 NEXT J : FOR L=1 TO 3 : PRINT " :  "; : IF N(L)<0 THEN PRINT "*** "; : GOTO 4230
+4210 PRINT RIGHT$(STR$(N(L)+1000),3);" ";
+4230 NEXT L : PRINT " : " : PRINT O1$ : NEXT I : GOTO 1990
+*/
+	if (gameVars->damage[3] < 0)
 	{
-	printf("Long Range Sensors are inopperable");
+		printf("Long Range Sensors are inopperable");
 	}
 	
-printf("Long Range Scan for Quadrant %d, %d", gameVars->entQuad[0], gameVars->entQuad[1]);
+	printf("Long Range Scan for Quadrant %d, %d", gameVars->entQuad[0], gameVars->entQuad[1]);
 
-printf("    -------------------");
+	printf("    -------------------");
 
-for (int i = gameVars->entQuad[0] -1; i <= gameVars->entQuad[0] + 1; i++)
+	for (int i = gameVars->entQuad[0] -1; i <= gameVars->entQuad[0] + 1; i++)
 	{
-	for (int j = gameVars->entQuad[1] - 1; j <= gameVars->entQuad[1] + 1; j++)
-		{
-		if (((i > 0) && (i < 9)) && ((j > 0) && (j < 9)))
+		for (int j = gameVars->entQuad[1] - 1; j <= gameVars->entQuad[1] + 1; j++)
 			{
-			gameVars->galaxyRecord[i][j] = gameVars->galaxy[i][j];
-			printf("%d :",gameVars->galaxyRecord[i][j]);
+				if (((i > 0) && (i < 9)) && ((j > 0) && (j < 9)))
+				{
+					gameVars->galaxyRecord[i][j] = gameVars->galaxy[i][j];
+					printf("%d :",gameVars->galaxyRecord[i][j]);
+				}
+				else 
+				{
+					printf(" *** : ");
+				}
 			}
-		
-		else 
-			{
-			printf(" *** : ");
-			}
-		}
 		printf("\n");
 	}
-printf("    -------------------");	
+	printf("    -------------------");	
 }
 
 
 void phaserControl(GameVariables *gameVars)
 {
+/*
+4250 REM PHASER CONTROL CODE BEGINS HERE
+4260 IF D(4)<0 THEN PRINT "PHASERS INOPERATIVE" : GOTO 1990
+4265 IF K3>0 THEN 4330
+4270 PRINT "SCIENCE OFFICER SPOCK REPORTS  'SENSORS SHOW NO ENEMY SHIPS"
+4280 PRINT "                                IN THIS QUADRANT'" : GOTO 1990
+4330 IF D(8)<0 THEN PRINT "COMPUTER FAILURE HAMPERS ACCURACY"
+4350 PRINT "PHASERS LOCKED ON TARGET;  ";
+4360 PRINT "ENERGY AVAILABLE =";E;" UNITS"
+4370 INPUT "NUMBER OF UNITS TO FIRE? ";X : IF X<=0 THEN 1990
+4400 IF E-X<0 THEN 4360
+4410 E=E-X : IF D(7)<0 THEN X=X*RND(1)
+4450 H1=INT(X/K3) : FOR I=1 TO 3 : IF K(I,3)<=0 THEN 4670
+4480 H=INT((H1/FND(0))*(RND(1)+2)) : IF H>.15*K(I,3) THEN 4530
+4500 PRINT "SENSORS SHOW NO DAMAGE TO ENEMY AT ";K(I,1);",";K(I,2) : GOTO 4670
+4530 K(I,3)=K(I,3)-H : PRINT H;" UNIT HIT ON KLINGON AT SECTOR";K(I,1);",";
+4550 PRINT K(I,2) : IF K(I,3)<=0 THEN PRINT "*** KLINGON DESTROYED ***" : GOTO 4580
+4560 PRINT "   (SENSORS SHOW";K(I,3);" UNITS REMAINING)" : GOTO 4670
+4580 K3=K3-1 : K9=K9-1 : Z1=K(I,1) : Z2=K(I,2) : A$="   " : GOSUB 8670
+4650 K(I,3)=0 : G(Q1,Q2)=G(Q1,Q2)-100 : Z(Q1,Q2)=G(Q1,Q2) : IF K9<=0 THEN 6370
+4670 NEXTI : GOSUB 6000 : GOTO 1990
+*/
 	int firePhasers = 3000;
 	int maxDamage;
 	int damageDone;
@@ -933,6 +974,40 @@ void phaserControl(GameVariables *gameVars)
 
 void photonTorpedoes(GameVariables *gameVars)
 {
+/*
+4690 REM PHOTON TORPEDO CODE BEGINS HERE
+4700 IF P<=0 THEN PRINT "ALL PHOTON TORPEDOES EXPENDED" : GOTO  1990
+4730 IF D(5)<0 THEN PRINT "PHOTON TUBES ARE NOT OPERATIONAL" : GOTO 1990
+4760 INPUT "PHOTON TORPEDO COURSE (1-9) ";C1 : IF C1=9 THEN C1=1
+4780 IF C1>=1 AND C1<9 THEN 4850
+4790 PRINT "ENSIGN CHEKOV REPORTS,  'INCORRECT COURSE DATA, SIR!'"
+4800 GOTO 1990
+4850 X1=C(C1,1)+(C(C1+1,1)-C(C1,1))*(C1-INT(C1)) : E=E-2 : P=P-1
+4860 X2=C(C1,2)+(C(C1+1,2)-C(C1,2))*(C1-INT(C1)) : X=S1 : Y=S2
+4910 PRINT "TORPEDO TRACK : "
+4920 X=X+X1 : Y=Y+X2 : X3=INT(X+.5) : Y3=INT(Y+.5)
+4960 IF X3<1 OR X3>8 OR Y3<1 OR Y3>8 THEN 5490
+5000 PRINT "               ";X3;",";Y3 : A$="   " : Z1=X : Z2=Y : GOSUB 8830
+5050 IF Z3<>0 THEN 4920
+5060 A$="+K+" : Z1=X : Z2=Y : GOSUB 8830 : IF Z3=0 THEN 5210
+5110 PRINT "*** KLINGON DESTROYED ***" : K3=K3-1 : K9=K9-1 : IF K9<=0 THEN 6370
+5150 FOR I=1 TO 3 : IF X3=K(I,1) AND Y3=K(I,2) THEN 5190
+5180 NEXT I : I=3
+5190 K(I,3)=0 : GOTO 5430
+5210 A$=" * " : Z1=X : Z2=Y : GOSUB 8830 : IF Z3=0 THEN 5280
+5260 PRINT "STAR AT ";X3;",";Y3;" ABSORBED TORPEDO ENERGY." : GOSUB 6000 : GOTO 1990
+5280 A$=">B<" : Z1=X : Z2=Y : GOSUB 8830 : IF Z3=0 THEN 4760
+5330 PRINT "*** STARBASE DESTROYED ***" : B3=B3-1 : B9=B9-1
+5360 IF B9>0 OR K9>T-T0-T9 THEN 5400
+5370 PRINT "THAT DOES IT, CAPTAIN!!  YOU ARE HEREBY RELIEVED OF COMMAND"
+5380 PRINT "AND SENTENCED TO 99 STARDATES AT HARD LABOR ON CYGNUS 12!!"
+5390 GOTO  6270
+5400 PRINT "STARFLEET COMMAND REVIEWING YOUR RECORD TO CONSIDER"
+5410 PRINT "COURT MARTIAL!" : D0=0
+5430 Z1=X : Z2=Y : A$="   " : GOSUB 8670
+5470 G(Q1,Q2)=K3*100+B3*10+S3 : Z(Q1,Q2)=G(Q1,Q2) : GOSUB 6000 : GOTO 1990
+5490 PRINT "TORPEDO MISSED" : GOSUB 6000 : GOTO 1990
+*/
 	char temp[6];
 	int torpX, torpY; 
 
@@ -1154,6 +1229,17 @@ printf("\n");
 
 void shieldControl(GameVariables *gameVars)
 {
+/*
+5520 REM SHIELD CONTROL
+5530 IF D(7)<0 THEN PRINT "SHIELD CONTROL INOPERABLE" : GOTO 1990
+5560 PRINT "ENERGY AVAILABLE =";E+S; : INPUT " NUMBER OF UNITS TO SHIELDS? ";X
+5580 IF X<0ORS=X THEN PRINT "<SHIELDS UNCHANGED>" : GOTO 1990
+5590 IF X<=E+S THEN 5630
+5600 PRINT "SHIELD CONTROL REPORTS  'THIS IS NOT THE FEDERATION TREASURY.'"
+5610 PRINT "<SHIELDS UNCHANGED>" : GOTO 1990
+5630 E=E+S-X : S=X : PRINT "DEFLECTOR CONTROL ROOM REPORT : "
+5660 PRINT "  'SHIELDS NOW AT ";INT(S);" UNITS PER YOUR COMMAND.'" : GOTO 1990
+*/
   int i;
   char temp[6];
 

@@ -15,9 +15,15 @@ super_star_trek.o: super_star_trek.c ./include/sst_functions.h
 sst_functions.o: ./include/sst_functions.c ./include/sst_functions.h
 	$(CC) -c ./include/sst_functions.c
 
+debug_build: $(FILES)
+		$(CC) -o $(OUT_EXE) $(FILES) -std=c99 -Wall -pedantic -g
+
+
 
 .PHONY: clean
 clean:
 	rm -f *.o $(OUT_EXE)
 
 rebuild: clean build
+
+debug: clean debug_build
