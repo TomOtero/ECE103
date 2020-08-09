@@ -57,7 +57,7 @@
 	void midStr(char *a, char *b, int x, int y); 
 
 	double findDistance(GameVariables *gameVars, int index);
-	double rnd(void);
+	double RandomToOne(void);
 
 	int findRandom(void);
 	int getRandRange(int iSpread);
