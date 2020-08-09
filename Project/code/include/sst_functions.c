@@ -31,64 +31,139 @@
 #define MAXLINES    66
 
 
+void zeros(GameVariables *gameVars)
+{	
+	//ints 
+	gameVars->dockFlag					= 0;  			
+	gameVars->damageRepFlag 			= 0;
+	gameVars->currEnergy 				= 0; 
+	gameVars->startEnergy				= 0;	
+	gameVars->quadName					= 0;
+	gameVars->klingStart				= 0; 
+	gameVars->klingQuad					= 0;
+	gameVars->klingLeft 				= 0; 
+	gameVars->klingPow 					= 0;
+	gameVars->torpLeft 					= 0; 
+	gameVars->torpCap 					= 0;
+	gameVars->entQuad[0]				= 0;	
+	gameVars->tempPos[0]				= 0;			 			
+	gameVars->shields 					= 0; 
+	gameVars->stars 					= 0;
+	gameVars->quadIndex					= 0;
+	gameVars->stardateStart 			= 0; 
+	gameVars->stardateEnd				= 0;
+	gameVars->tempSectCoord[0]		    = 0;
+	gameVars->compare					= 0;
+	gameVars->tempQuadCoord[0]			= 0; 
+	gameVars->starbaseQuadrant			= 0;
+	gameVars->starbaseLocation[0]		= 0;
+	gameVars->starbaseTotal				= 0;
+	gameVars->galaxy[0][0]				= 0;
+	gameVars->galaxyRecord[0][0]		= 0;
+	gameVars->klingData[0][0]			= 0;
+	gameVars->locationMove[0][0]		= 0;
+	gameVars->outOfBoundsFlag			= 0;
+	gameVars->n							= 0;
+	
+	//doubles
+	gameVars->repairTime				= 0.0;
+	gameVars->entSect[0]		 		= 0.0;
+	gameVars->stardateCurr				= 0.0;
+	gameVars->warpFactor				= 0.0;
+	gameVars->navX 						= 0.0; 
+	gameVars->navY 						= 0.0; 	
+	gameVars->navX1 					= 0.0; 
+	gameVars->navX2						= 0.0;
+	gameVars->damage[0]					= 0.0;
+	gameVars->course					= 0.0;
+	gameVars->deltaCourseWarpFactor		= 0.0;
+
+	//strings
+	gameVars->objInSector[0]			= '0';
+	gameVars->condition[0]				= '0';
+	gameVars->quadDisp[0]				= '0';
+	gameVars->tempStr[0][0]				= '0';
+	gameVars->command[0]				= '0';
+	gameVars->commandList[0][0]			= '0';
+	gameVars->strResults[0]				= '0';
+}
 
 
 void eventHandler(GameVariables *gameVars)
 {
-	/*
-	Initializes the game variables
-	*/
 
-	//Initialize Time
-	printf("COMMAND? ");
-	gets(gameVars->command);
-  	printf("\n");
-	if(strcmp(gameVars->command,"nav")==0)
+	
+/*
+1990 IF S+E>10 THEN IF E>10 OR D(7)=0 THEN 2060
+2020 PRINT : PRINT "** FATAL ERROR **   YOU'VE JUST STRANDED YOUR SHIP IN "
+2030 PRINT "SPACE" : PRINT "YOU HAVE INSUFFICIENT MANEUVERING ENERGY,";
+2040 PRINT " AND SHIELD CONTROL" : PRINT "IS PRESENTLY INCAPABLE OF CROSS";
+2050 PRINT "-CIRCUITING TO ENGINE ROOM!!" : GOTO 6220
+2060 INPUT "COMMAND: ";A$
+*/
+	if (gameVars->running == true && gameVars->currGame == true)
 	{
-		printf("courseControl();\n");
-		courseControl(gameVars);
-	}
-	else if (strcmp(gameVars->command,"srs")==0)
-	{
-		shortRangeScan(gameVars);		
-	}
-	else if (strcmp(gameVars->command,"lrs")==0)
-	{
-		longRangeScan(gameVars);		
-	}
-	else if (strcmp(gameVars->command,"pha")==0)
-	{
-		phaserControl(gameVars);	
-	}
-	else if (strcmp(gameVars->command,"tor")==0)
-	{
-		photonTorpedoes(gameVars);		
-	}
-	else if (strcmp(gameVars->command,"she")==0)
-	{
-		shieldControl(gameVars);		
-	}
-	else if (strcmp(gameVars->command, "dam")==0)
-    {
-        damageControl(gameVars);
-    }
-	else if (strcmp(gameVars->command,"com")==0)
-	{
-		libraryComputer(gameVars);		
-	}
-	else if (strcmp(gameVars->command,"xxx")==0)
-	{
-		resignCommision(gameVars);		
-	}
-	else if(strcmp(gameVars->command,"help")==0)
-	{
-		commandHelp();
-	}
-	else
-	{
-		commandHelp();
-	}
+		if (gameVars->shields + gameVars->currEnergy <= 10 || (gameVars->currEnergy < 10 || 
+				gameVars->damage[6] < 0)) //1990 IF S+E>10 THEN IF E>10 OR D(7)=0 THEN 2060
+	    {
+	  		printf("\n** FATAL ERROR **   YOU'VE JUST STRANDED YOUR SHIP IN SPACE");
+	  		printf("YOU HAVE INSUFFICIENT MANEUVERING ENERGY,\n");
+	  		printf("AND SHIELD CONTROL");
+	  		printf("IS PRESENTLY INCAPABLE OF CROSS\n");
+	  		printf("-CIRCUITING TO ENGINE ROOM!!\n\n");
+	  		endOfTime(gameVars);
+	    }
 
+	    // FOR I=1 TO 9 : IF LEFT$(A$,3)<>MID$(A1$,3*I-2,3) THEN 2160
+		// 2140 ON I GOTO 2300,1980,4000,4260,4700,5530,5690,7290,6270
+		printf("COMMAND? ");
+		gets(gameVars->command);
+	  	printf("\n");
+		if(strcmp(gameVars->command,"nav")==0)
+		{
+			courseControl(gameVars); //2300
+		}
+		else if (strcmp(gameVars->command,"srs")==0)
+		{
+			shortRangeScan(gameVars); //1980		
+		}
+		else if (strcmp(gameVars->command,"lrs")==0)
+		{
+			longRangeScan(gameVars); //4000		
+		}
+		else if (strcmp(gameVars->command,"pha")==0)
+		{
+			phaserControl(gameVars); //4260
+		}
+		else if (strcmp(gameVars->command,"tor")==0)
+		{
+			photonTorpedoes(gameVars); //4700	
+		}
+		else if (strcmp(gameVars->command,"she")==0)
+		{
+			shieldControl(gameVars); //5530	
+		}
+		else if (strcmp(gameVars->command, "dam")==0)
+	    {
+	        damageControl(gameVars); //5690
+	    }
+		else if (strcmp(gameVars->command,"com")==0)
+		{
+			libraryComputer(gameVars); //7290
+		}
+		else if (strcmp(gameVars->command,"xxx")==0)
+		{
+			resignCommision(gameVars); //6270		
+		}
+		else if(strcmp(gameVars->command,"help")==0)
+		{
+			commandHelp();
+		}
+		else
+		{
+			commandHelp();
+		}
+	}
 }
 
 void commandHelp(void)
@@ -188,9 +263,9 @@ void clear(GameVariables *gameVars)
 */
 
 	//Initializing time
-	gameVars->stardateCurr		=(int)(rand()*20+20)*100;  	// T
+	gameVars->stardateCurr		=(int)(getRandRange(20)+20)*100;  	// T
 	gameVars->stardateStart		=gameVars->stardateCurr;	// T0
-	gameVars->stardateEnd 		= 25+(int)(rand()*10); 	 	// T9
+	gameVars->stardateEnd 		= 25+(int)(getRandRange(10)); 	 	// T9
 
 	//Initialize general
 	gameVars->dockFlag 			 = 0;						// D0
@@ -282,13 +357,11 @@ void initialize(GameVariables *gameVars)
 		      gameVars->klingQuad = 2;
 		    else if (gameVars->tempPos[0]  > 80)
 		      gameVars->klingQuad = 1;
-
 		    gameVars->klingLeft = gameVars->klingLeft + gameVars->klingQuad;
-		    gameVars->starbaseQuadrant = 0;
 
+		    gameVars->starbaseQuadrant = 0;
 		    if (getRandRange(100) > 96)
 		      gameVars->starbaseQuadrant = 1;
-
 		    gameVars->starbaseTotal = gameVars->starbaseTotal + 
 		    						gameVars->starbaseQuadrant;
 
@@ -296,10 +369,13 @@ void initialize(GameVariables *gameVars)
 		    						gameVars->starbaseQuadrant * 10 + findRandom();
 		  }
 	}
+	//IF K9>T9 THEN T9=K9+1
 	if (gameVars->klingLeft > gameVars->stardateEnd)
 	{
     	gameVars->stardateEnd = gameVars->klingLeft + 1;
 	}
+	//1150 IF G(Q1,Q2)<200 THEN G(Q1,Q2)=G(Q1,Q2)+120 : K9=K9+1
+	//1160 B9=1 : G(Q1,Q2)=G(Q1,Q2)+10 : Q1=FNR(1) : Q2=FNR(1)
   	if (gameVars->starbaseTotal == 0)
     {
       	if (gameVars->galaxy[gameVars->entQuad[0]][gameVars->entQuad[1]] < 200)
@@ -317,8 +393,8 @@ void initialize(GameVariables *gameVars)
   		gameVars->entQuad[1] = findRandom();
     }
 
+    // 1200 K7=K9 : IF B9<>1 THEN X$="S" : X0$=" ARE "
   	gameVars->klingStart = gameVars->klingLeft;
-
   	if (gameVars->starbaseTotal != 1)
     {
       	strcpy(gameVars->tempStr[0], "S");
@@ -329,7 +405,9 @@ void initialize(GameVariables *gameVars)
 	printf("   DESTROY THE %d KLINGON WARSHIPS WHICH HAVE INVADED\n", gameVars->klingLeft);
 	printf("   THE GALAXY BEFORE THEY CAN ATTACK FEDERATION HEADQUARTERS\n");
 	printf("   ON STARDATE %d. THIS GIVES YOU %d DAYS. THERE %s\n",
-	gameVars->stardateStart + gameVars->stardateEnd, gameVars->stardateEnd, gameVars->tempStr[1]);
+			gameVars->stardateStart + gameVars->stardateEnd, 
+			gameVars->stardateEnd, 
+			gameVars->tempStr[1]);
 	printf("   %d STARBASE%s IN THE GALAXY FOR RESUPPLYING YOUR SHIP.\n\n",
 	gameVars->starbaseTotal, gameVars->tempStr[0]);
 
@@ -362,12 +440,12 @@ void newQuadrant(GameVariables *gameVars)
 	gameVars->starbaseQuadrant = 0;
 	gameVars->stars = 0;
 	gameVars->quadName = 0; 
-	gameVars->repairTime = (double) (getRandRange(100)/100)/2; // D4=.5*RND(1) //sets to a value 0 - 1 then takes half
+	gameVars->repairTime = (double) (getRandRange(100)/100)/50; // D4=.5*RND(1) //sets to a value 0 - 1 then takes half
 	gameVars->galaxyRecord[gameVars->tempQuadCoord[0]][gameVars->tempQuadCoord[1]] = 
 			gameVars->galaxy[gameVars->entQuad[0]][gameVars->entQuad[1]];
 
-	if (gameVars->entQuad[0] >= 1 || gameVars->entQuad[0] <= 8 || 
-		gameVars->entQuad[1] >= 1 || gameVars->entQuad[1] <= 8)
+	if (gameVars->entQuad[0] >= 0 || gameVars->entQuad[0] <= 7 || 
+		gameVars->entQuad[1] >= 0 || gameVars->entQuad[1] <= 7)
 	{
 	  quadrantName(gameVars);
 
@@ -381,44 +459,48 @@ void newQuadrant(GameVariables *gameVars)
 	}
 
 	gameVars->klingQuad = (int)(gameVars->galaxy[gameVars->entQuad[0]][gameVars->entQuad[1]] * .01);
-	gameVars->starbaseQuadrant = (int)(gameVars->galaxy[gameVars->entQuad[0]][gameVars->entQuad[1]] * .1 - 10 * gameVars->klingQuad);
+	gameVars->starbaseQuadrant = (int)(gameVars->galaxy[gameVars->entQuad[0]][gameVars->entQuad[1]] * .1) - 10 * gameVars->klingQuad;
 	gameVars->stars = gameVars->galaxy[gameVars->entQuad[0]][gameVars->entQuad[1]] - 100 * gameVars->klingQuad - 10 * gameVars->starbaseQuadrant;
 
+	// IF K3=0 THEN 1590
 	if (gameVars->klingQuad > 0)
 	{
 	  	printf("COMBAT AREA  CONDITION RED\n");
-	  	if (gameVars->shields < 200)
+	  	//IF S>200 THEN 1590 <-- because basic is apparent written for to be as unintuitive as possible...
+	  	if (gameVars->shields < 200) // so this is technically the else logic... 
 	  	{
 	    	printf("SHIELDS DANGEROUSLY LOW\n");
 		}
 	}
-
+	// 1590 FOR I=1 TO 3 : K(I,1)=0 : K(I,2)=0 : NEXT I
 	for (i = 0; i < 3; i++)
 	{
 	  	gameVars->klingData[i][0] = 0;
 	  	gameVars->klingData[i][1] = 0;
 	  	gameVars->klingData[i][2] = 0;
 	}
-
+	// Q$=Z$+Z$+Z$+Z$+Z$+Z$+Z$+LEFT$(Z$,17) == 192 
+	// because --> 270 Z$="                         " == 25x'\s'
 	for (i = 0; i <= 192; i++)
 	{
 		gameVars->quadDisp[i] = ' ';
 	}
 	gameVars->quadDisp[193] = '\0';
 
-	//Position Enterprise
-	strcpy(gameVars->objInSector, "<*>");
+	// Position Enterprise
+	strcpy(gameVars->objInSector, "<E>");
 	gameVars->tempSectCoord[0] = (int)gameVars->entSect[0];
 	gameVars->tempSectCoord[1] = (int)gameVars->entSect[1];
 	insertInQuadrant(gameVars);
 
-	//Position Klingons
-	if (gameVars->klingQuad > 0)
+	// Position Klingons
+	//IF K3<1 THEN 1820
+	//<else>FOR I=1 TO K3 : GOSUB 8590 : A$="+K+" : Z1=R1 : Z2=R2 <-- this type of logic is actual insanity
+	if (gameVars->klingQuad > 0)// anyway this is the else statment...
 	{
 	  for (i = 1; i <= gameVars->klingQuad; i++)
 	    {
 	      	findEmptyPlace(gameVars);
-
 	      	strcpy(gameVars->objInSector, "+K+");
       		gameVars->tempSectCoord[0] = gameVars->tempPos[0];
 	      	gameVars->tempSectCoord[1] = gameVars->tempPos[1];
@@ -430,40 +512,67 @@ void newQuadrant(GameVariables *gameVars)
 	    }
 	}
 
-	//Position Starbases
+	// Position Starbases
+	/*
+	IF B3<1 THEN 1910
+	1880 GOSUB 8590 : A$=">B<" : Z1=R1 : B4=R1 : Z2=R2 : B5=R2 : GOSUB 8670
+
+	*/
 	if (gameVars->starbaseQuadrant > 0)
 	{
-	  findEmptyPlace(gameVars);
-
-	  strcpy(gameVars->objInSector, ">!<");
+	 	findEmptyPlace(gameVars);
+	 	strcpy(gameVars->objInSector, ">B<");
   		gameVars->tempSectCoord[0] = gameVars->tempPos[0];
 	  	gameVars->tempSectCoord[1] = gameVars->tempPos[1];
-	  insertInQuadrant(gameVars);
+	 	insertInQuadrant(gameVars);
 
-	  gameVars->starbaseLocation[0] = gameVars->tempPos[0];
-	  gameVars->starbaseLocation[1] = gameVars->tempPos[1];
+	 	gameVars->starbaseLocation[0] = gameVars->tempPos[0];
+	 	gameVars->starbaseLocation[1] = gameVars->tempPos[1];
 	}
 
+	// Position Stars
+	/*
+	1910 FOR I=1 TO S3 : GOSUB 8590 : A$=" * " : Z1=R1 : Z2=R2 : GOSUB 8670 : NEXT I
+	*/
 	for (i = 1; i <= gameVars->stars; i++)
 	{
-	  findEmptyPlace(gameVars);
-
-	  strcpy(gameVars->objInSector, " * ");
+  		findEmptyPlace(gameVars);
+  		strcpy(gameVars->objInSector, " * ");
   		gameVars->tempSectCoord[0] = gameVars->tempPos[0];
 	  	gameVars->tempSectCoord[1] = gameVars->tempPos[1];
-	  insertInQuadrant(gameVars);
+  		insertInQuadrant(gameVars);
 	}
+	// 1980 GOSUB 6430 <-- thats srs
+	shortRangeScan(gameVars);
 }
 
 
-void courseControl(GameVariables *gameVars) //2290 REM COURSE CONTROL BEGINS HERE
+void courseControl(GameVariables *gameVars)
 {
-	int i;
-	/* @@@ int c2, c3, q4, q5; */
-	// int q4, q5; 			// No idea what these are used for...
+/*
+2290 REM COURSE CONTROL BEGINS HERE
+2300 INPUT "COURSE (0-9) ";C1 : IF C1=9 THEN C1=1
+2310 IF C1>=1 AND C1<9 THEN 2350
+2330 PRINT "   LT. SULU REPORTS, 'INCORRECT COURSE DATA, SIR!'" : GOTO 1990
+2350 X$="8" : IF D(1)<0 THEN X$="0.2"
+2360 PRINT "WARP FACTOR (0-";X$;") "; : INPUT W1 : IF D(1)<0 AND W1>.2 THEN 2470
+2380 IF W1>0 AND W1<=8 THEN 2490
+2390 IF W1=0 THEN 1990
+2420 PRINT "   CHIEF ENGINEER SCOTT REPORTS 'THE ENGINES WON'T TAKE";
+2430 PRINT " WARP ";W1;"!'" : GOTO 1990
+2470 PRINT "WARP ENGINES ARE DAMAGED.  MAXIUM SPEED = WARP 0.2" : GOTO 1990
+2490 N=INT(W1*8+.5) : IF E-N>=0 THEN 2590
+2500 PRINT "ENGINEERING REPORTS   'INSUFFICIENT ENERGY AVAILABLE"
+2510 PRINT "                       FOR MANEUVERING AT WARP";W1;"!'"
+2530 IF S<N-E OR D(7)<0 THEN 1990
+2550 PRINT "DEFLECTOR CONTROL ROOM ACKNOWLEDGES ";S;" UNITS OF ENERGY"
+2560 PRINT "                         PRESENTLY DEPLOYED TO SHIELDS."
+2570 GOTO 1990
+*/
+
+	int i, q4, q5;
 	char temp[6];
-	// double course;
-	strcpy(gameVars->tempStr[0], "8");
+	
 
 	printf("COURSE (0-9): ");
 
@@ -473,49 +582,54 @@ void courseControl(GameVariables *gameVars) //2290 REM COURSE CONTROL BEGINS HER
 
 	gameVars->course = atof(temp);
 
-	if (gameVars->course == 9.0)
-	gameVars->course = 1.0;
-
-	if (gameVars->course < 0 || gameVars->course > 9.0)
+	if (gameVars->course == 9.0) //IF C1=9 THEN C1=1
+	{
+		gameVars->course = 1.0;
+	}
+	// This line is implicit  
+	// 2310 IF C1>=1 AND C1<9 THEN 2350
+	// PRINT "   LT. SULU REPORTS, 'INCORRECT COURSE DATA, SIR!'" : GOTO 1990
+	if (gameVars->course < 0.0 || gameVars->course > 9.0)
 	{
 	  printf("LT. SULU REPORTS, 'INCORRECT COURSE DATA, SIR!'\n");
 	  return;
 	}
-
-	if (gameVars->damage[1] < 0.0)
-	strcpy(gameVars->tempStr[0], "0.2");
+	//2350 X$="8" : IF D(1)<0 THEN X$="0.2"
+	strcpy(gameVars->tempStr[0], "8");
+	if (gameVars->damage[0] < 0.0)
+	{
+		strcpy(gameVars->tempStr[0], "0.2");
+	}
 
 	printf("WARP FACTOR (0-%s): ", gameVars->tempStr[0]);
-
 	gets(temp);
-
 	printf("\n");
-
 	gameVars->warpFactor = atof(temp);
 
-	if (gameVars->damage[1] < 0.0 && gameVars->warpFactor > 0.21)
+	//2350 X$="8" : IF D(1)<0 THEN X$="0.2"
+	if (gameVars->damage[0] < 0.0 && gameVars->warpFactor > 0.21)
 	{
 	  printf("WARP ENGINES ARE DAMAGED.  MAXIUM SPEED = WARP 0.2");
 	  return;
 	}
-
+	//2380 IF W1>0 AND W1<=8 THEN 2490 <-- this line's else statemnts are below
+	//2390 IF W1=0 THEN 1990
 	if (gameVars->warpFactor <= 0.0)
-	return;
-
+		return;
 	if (gameVars->warpFactor > 8.1)
 	{
-	  printf("CHIEF ENGINEER SCOTT REPORTS 'THE ENGINES WON'T TAKE WARP %4.1f!'\n", gameVars->warpFactor);
-	  return;
+		printf("CHIEF ENGINEER SCOTT REPORTS 'THE ENGINES WON'T TAKE WARP %4.1f!'\n", gameVars->warpFactor);
+	 	return;
 	}
 
+	//2490 N=INT(W1*8+.5) : IF E-N>=0 THEN 2590
 	gameVars->n = doubleToInt(gameVars->warpFactor * 8.0); //N=INT(W1*8+.5)
-
-	if (gameVars->currEnergy - gameVars->n < 0)
+	if (gameVars->currEnergy - gameVars->n < 0) // so opposite of line 2490
 	{
 	  printf("ENGINEERING REPORTS   'INSUFFICIENT ENERGY AVAILABLE for maneuvering");
 	  printf("                       FOR MANEUVERING AT WARP %4.1f!'\n", gameVars->warpFactor);
 
-	  if (gameVars->shields >= gameVars->n && gameVars->damage[7] >= 0.0)
+	  if (gameVars->shields < gameVars->n - gameVars->currEnergy || gameVars->damage[6] < 0.0)
 	    {
 	      printf("DEFLECTOR CONTROL ROOM ACKNOWLEDGES\n");
 	      printf("  %d UNITS OF ENERGY PRESENTLY DEPLOYED TO SHIELDS.\n", gameVars->shields);
@@ -523,16 +637,21 @@ void courseControl(GameVariables *gameVars) //2290 REM COURSE CONTROL BEGINS HER
 
 	  return;
 	}
-	//2580 REM KLINGONS MOVE/FIRE ON MOVING STARSHIP
-	klingonsMove(gameVars);
+	// 2580 REM KLINGONS MOVE/FIRE ON MOVING STARSHIP . . .
+	if(gameVars->klingQuad!=0) //2590 ... IF K(I,3)=0 THEN 2700
+	{	
+		printf("[DEBUG] gameVars->klingQuad : %d\n",gameVars->klingQuad);
+		_klingonsMove(gameVars); 
+	}
 
-	repairDamage(gameVars);
-
+	_repairDamage(gameVars);
+	
+	// 3060 REM BEGIN MOVING STARSHIP
 	strcpy(gameVars->objInSector, "   ");
 	gameVars->tempSectCoord[0] = (int)gameVars->entSect[0];
 	gameVars->tempSectCoord[1] = (int)gameVars->entSect[1];
-	insertInQuadrant(gameVars);
-
+	insertInQuadrant(gameVars); //8670
+	//3110 X1=C(C1,1)+(C(C1+1,1)-C(C1,1))*(C1-INT(C1))
 	gameVars->navX1 = gameVars->locationMove[(int)gameVars->course][0] + 
 		(gameVars->locationMove[(int)gameVars->course + 1][0] - 
 		gameVars->locationMove[(int)gameVars->course][0]) * 
@@ -545,23 +664,26 @@ void courseControl(GameVariables *gameVars) //2290 REM COURSE CONTROL BEGINS HER
 
 	gameVars->navX = gameVars->entSect[0];
 	gameVars->navY = gameVars->entSect[1];
-	// q4 = gameVars->entQuad[0];
-	// q5 = gameVars->entQuad[0];
-
-	for (i = 1; i <= gameVars->n; i++)
+	q4 = gameVars->entQuad[0];
+	q5 = gameVars->entQuad[0];
+	
+	//3170 FOR I=1 TO N : S1=S1+X1 : S2=S2+X2 : IF S1<1 OR S1>=9 OR S2<1 OR S2>=9 THEN 3500
+	for (i = 0; i < gameVars->n; i++)
 	{
 		gameVars->entSect[0] = gameVars->entSect[0] + gameVars->navX1;
 	  	gameVars->entSect[1] = gameVars->entSect[1] + gameVars->navX2;
-
-	  	/* @@@ gameVars->tempSectCoord[0] = doubleToInt(s1); */
 		gameVars->tempSectCoord[0] = (int)gameVars->entSect[0];
-		/* @@@ gameVars->tempSectCoord[1] = doubleToInt(s2); */
 		gameVars->tempSectCoord[1] = (int)gameVars->entSect[1];
 
-	  if (gameVars->tempSectCoord[0] < 1 || gameVars->tempSectCoord[0] >= 9 || gameVars->tempSectCoord[1] < 1 || gameVars->tempSectCoord[1] >= 9)
+	  	if (gameVars->tempSectCoord[0] < 0 || 
+	  		gameVars->tempSectCoord[0] > 7 ||
+	  	  	gameVars->tempSectCoord[1] < 0 || 
+	  	 	gameVars->tempSectCoord[1] > 7)
 	    {
-	      	outOfBounds(gameVars);
-	      	completeManeuver(gameVars);
+	    	printf("[DEBUG] gameVars->tempSectCoord[0]: %d\n", gameVars->tempSectCoord[0]);
+	    	printf("[DEBUG] gameVars->tempSectCoord[1]: %d\n", gameVars->tempSectCoord[1]);
+	      	_outOfBounds(gameVars);
+	      	_completeManeuver(gameVars);
 	      	return;
 	    }
 
@@ -579,29 +701,32 @@ void courseControl(GameVariables *gameVars) //2290 REM COURSE CONTROL BEGINS HER
 	    }
 	}
 
-	completeManeuver(gameVars);
+	_completeManeuver(gameVars);
 }
 
 
-void completeManeuver(GameVariables *gameVars)
+void _completeManeuver(GameVariables *gameVars)
 {
-	double t8;
+/*
+Function that completes courseControl
+*/
 
-	strcpy(gameVars->objInSector, "<*>");
-  	/* @@@ gameVars->tempSectCoord[0] = doubleToInt(s1); */
+	double timeFactor;				// t8
+
+	strcpy(gameVars->objInSector, "<E>");
 	gameVars->tempSectCoord[0] = (int)gameVars->entSect[0];
-	/* @@@ gameVars->tempSectCoord[1] = doubleToInt(s2); */
 	gameVars->tempSectCoord[1] = (int)gameVars->entSect[1];
 	insertInQuadrant(gameVars);
-
 	maneuverEnergy(gameVars);
 
-	t8 = 1.0;
+	timeFactor = 1.0;
 
 	if (gameVars->warpFactor < 1.0)
-	t8 = gameVars->warpFactor;
+	{
+		timeFactor = gameVars->warpFactor;
+	}
 
-	gameVars->stardateCurr = gameVars->stardateCurr + t8;
+	gameVars->stardateCurr = gameVars->stardateCurr + timeFactor;
 
 	if (gameVars->stardateCurr > gameVars->stardateStart + gameVars->stardateEnd)
 	{	
@@ -612,7 +737,7 @@ void completeManeuver(GameVariables *gameVars)
 }
 
 
-void outOfBounds (GameVariables *gameVars)
+void _outOfBounds(GameVariables *gameVars)
 {
 /*
 3490 REM EXCEEDED QUADRANT LIMITS
@@ -634,57 +759,57 @@ void outOfBounds (GameVariables *gameVars)
 3870 T=T+1 : GOSUB 3910 : GOTO 1320
 */
 	int outOfBoundsFlag = 0;
-	gameVars->n = (int)(gameVars->warpFactor * 8.0);
+	gameVars->n = (int)(gameVars->warpFactor * 7.0);
 	
 	gameVars->navX = (8 * gameVars->entQuad[0]) + 
 					  gameVars->navX + (gameVars->n * gameVars->navX1);
 	gameVars->navY = (8 * gameVars->entQuad[1]) + 
 					  gameVars->navY + (gameVars->n * gameVars->navY);
 
-	gameVars->entQuad[0] = (int)(gameVars->navX/8);
-	gameVars->entQuad[1] = (int)(gameVars->navY/8);
-	gameVars->entSect[0] = (gameVars->navX - gameVars->entQuad[0]/8);
-	gameVars->entSect[1] = (gameVars->navY - gameVars->entQuad[1]/8);
+	gameVars->entQuad[0] = (int)(gameVars->navX / 7);
+	gameVars->entQuad[1] = (int)(gameVars->navY / 7);
+	gameVars->entSect[0] = (gameVars->navX - gameVars->entQuad[0] * 7);
+	gameVars->entSect[1] = (gameVars->navY - gameVars->entQuad[1] * 7);
 	printf("[DEBUG] gameVars->entSect[0]: %f\n", gameVars->entSect[0]);
-	printf("[DEBUG] gameVars->entSect[1]:%f\n", gameVars->entSect[1]);
+	printf("[DEBUG] gameVars->entSect[1]: %f\n", gameVars->entSect[1]);
 	if ((int)gameVars->entSect[0] == 0) //3550 ...  IF S1=0 THEN Q1=Q1-1 : S1=8
 	{
 		gameVars->entQuad[0] = gameVars->entQuad[0] - 1;
-		gameVars->entSect[0] = 8.0;
+		gameVars->entSect[0] = 7.0;
 	}
 	
 	if ((int)gameVars->entSect[1] == 0) //3590 IF S2=0 THEN Q2=Q2-1 : S2=8
 	{
 		gameVars->entQuad[1] = gameVars->entQuad[1] - 1;
-		gameVars->entSect[1] = 8.0;
+		gameVars->entSect[1] = 7.0;
 	}
 	
-	if (gameVars->entQuad[0] < 1)
+	if (gameVars->entQuad[0] < 0)
 	{
 		outOfBoundsFlag = 1;
-		gameVars->entQuad[0] = 1;
-		gameVars->entSect[0] = 1.0;
+		gameVars->entQuad[0] = 0;
+		gameVars->entSect[0] = 0.0;
 	}
 	
-	if (gameVars->entQuad[1] < 1)
+	if (gameVars->entQuad[1] < 0)
 	{
 		outOfBoundsFlag = 1;
-		gameVars->entQuad[1] = 1;
-		gameVars->entSect[1] = 1.0;
+		gameVars->entQuad[1] = 0;
+		gameVars->entSect[1] = 0.0;
 	}
 	
-	if (gameVars->entQuad[0] > 8)
+	if (gameVars->entQuad[0] > 7)
 	{
 		outOfBoundsFlag = 1;
-		gameVars->entQuad[0] = 8;
-		gameVars->entSect[0] = 8.0;
+		gameVars->entQuad[0] = 7;
+		gameVars->entSect[0] = 7.0;
 	}
 	
-	if (gameVars->entQuad[1] > 8)
+	if (gameVars->entQuad[1] > 7)
 	{
 		outOfBoundsFlag = 1;
-		gameVars->entQuad[1] = 8;
-		gameVars->entSect[1] = 8.0;
+		gameVars->entQuad[1] = 7;
+		gameVars->entSect[1] = 7.0;
 	}
 	
     if (outOfBoundsFlag == 1)
@@ -701,9 +826,11 @@ void outOfBounds (GameVariables *gameVars)
 	maneuverEnergy(gameVars);
 	printf("[DEBUG] here2\n");
 	if (gameVars->stardateCurr > gameVars->stardateStart + gameVars->stardateEnd)
+	{
     	endOfTime(gameVars);
 		gameVars->stardateCurr = gameVars->stardateCurr + 1;
 		newQuadrant(gameVars);
+	}
 }
 
 
@@ -720,7 +847,7 @@ void maneuverEnergy(GameVariables *gameVars)
 
   	if (gameVars->currEnergy >= 0)
   	{
-  		printf("[DEBUG]  if (gameVars->currEnergy >= 0)\n");
+  		printf("[DEBUG] if (gameVars->currEnergy >= 0)\n");
     	return;
   	}
 
@@ -735,9 +862,34 @@ void maneuverEnergy(GameVariables *gameVars)
     }
 }	
 
-//6420 REM SHORT RANGE SENSOR SCAN & STARTUP SUBROUTINE
+
 void shortRangeScan(GameVariables *gameVars)
 {
+
+/*
+REM SHORT RANGE SENSOR SCAN & STARTUP SUBROUTINE
+6430 FOR I=S1-1 TO S1+1 : FOR J=S2-1 TO S2+1
+6450 IF INT(I+.5)<1ORINT(I+.5)>8ORINT(J+.5)<1ORINT(J+.5)>8 THEN 6540
+6490 A$=">B<" : Z1=I : Z2=J : GOSUB 8830 : IF Z3=1 THEN 6580
+6540 NEXT J : NEXT I : D0=0 : GOTO 6650
+6580 D0=1 : C$="DOCKED" : E=E0 : P=P0
+6620 PRINT "SHIELDS DROPPED FOR DOCKING PURPOSES" : S=0 : GOTO 6720
+6650 IF K3>0 THEN C$="*RED*" : GOTO 6720
+6660 C$="GREEN" : IF E<E0*.1 THEN C$="YELLOW"
+6720 IF D(2)>=0 THEN 6770
+6730 PRINT : PRINT "*** SHORT RANGE SENSORS ARE OUT ***" : PRINT : RETURN
+6770 O1$="---------------------------------" : PRINT O1$ : FOR I=1 TO 8
+6820 FOR J=(I-1)*24+1 TO (I-1)*24+22 STEP 3 : PRINT " ";MID$(Q$,J,3); : NEXT J
+6830 ON I GOTO 6850,6900,6960,7020,7070,7120,7180,7240
+6850 PRINT "        STARDATE           ";INT(T*10)*.1 : GOTO 7260
+6900 PRINT "        CONDITION          ";C$ : GOTO 7260
+6960 PRINT "        QUADRANT           ";Q1;",";Q2 : GOTO 7260
+7020 PRINT "        SECTOR             ";S1;",";S2 : GOTO 7260
+7070 PRINT "        PHOTON TORPEDOES   ";INT(P) : GOTO 7260
+7120 PRINT "        TOTAL ENERGY       ";INT(E+S) : GOTO 7260
+7180 PRINT "        SHIELDS            ";INT(S) : GOTO 7260
+7240 PRINT "        KLINGONS REMAINING ";INT(K9)
+*/
 	int i, j;
 	strcpy(gameVars->condition, "GREEN");
 
@@ -762,7 +914,7 @@ void shortRangeScan(GameVariables *gameVars)
       	{	
 	      	if (i >= 1 && i <= 8 && j >= 1 && j <= 8)
 	        {
-	          strcpy(gameVars->objInSector, ">!<");
+	          strcpy(gameVars->objInSector, ">B<");
 	          gameVars->tempSectCoord[0] = i;
 	          gameVars->tempSectCoord[1] = j;
 	          stringCompare(gameVars);
@@ -826,32 +978,32 @@ void longRangeScan (GameVariables *gameVars)
 4210 PRINT RIGHT$(STR$(N(L)+1000),3);" ";
 4230 NEXT L : PRINT " : " : PRINT O1$ : NEXT I : GOTO 1990
 */
-	if (gameVars->damage[3] < 0)
+	if (gameVars->damage[2] < 0.0)
 	{
-		printf("Long Range Sensors are inopperable");
+		printf("LONG RANGE SENSORS ARE INOPERABLE\n");
 	}
 	
-	printf("Long Range Scan for Quadrant %d, %d", gameVars->entQuad[0], gameVars->entQuad[1]);
+	printf("LONG RANGE SCAN FOR QUADRANT %d, %d\n", 
+			gameVars->entQuad[0], gameVars->entQuad[1]);
+	printf("    -------------------\n");
 
-	printf("    -------------------");
-
-	for (int i = gameVars->entQuad[0] -1; i <= gameVars->entQuad[0] + 1; i++)
+	for (int i = gameVars->entQuad[0] - 1; i <= gameVars->entQuad[0] + 1; i++)
 	{
 		for (int j = gameVars->entQuad[1] - 1; j <= gameVars->entQuad[1] + 1; j++)
 			{
-				if (((i > 0) && (i < 9)) && ((j > 0) && (j < 9)))
+				if (((i > 0) && (i < 8)) && ((j > 0) && (j < 8)))
 				{
 					gameVars->galaxyRecord[i][j] = gameVars->galaxy[i][j];
-					printf("%d :",gameVars->galaxyRecord[i][j]);
+					printf(" %3.3d :",gameVars->galaxyRecord[i][j]);
 				}
 				else 
 				{
-					printf(" *** : ");
+					printf(" *** :");
 				}
 			}
 		printf("\n");
 	}
-	printf("    -------------------");	
+	printf("    -------------------\n");	
 }
 
 
@@ -952,7 +1104,7 @@ void phaserControl(GameVariables *gameVars)
 			gameVars->klingLeft--;
 			gameVars->tempSectCoord[0] = gameVars->klingData[i][0];
 			gameVars->tempSectCoord[1] = gameVars->klingData[i][1];
-			insertInQuadrant(gameVars); //Confirm Function Name 
+			insertInQuadrant(gameVars);
 			gameVars->klingData[i][2] = 0;
 			gameVars->galaxy[gameVars->entQuad[0]][gameVars->entQuad[1]] = 
 				gameVars->galaxy [gameVars->entQuad[0]][gameVars->entQuad[1]] - 100;
@@ -1023,7 +1175,7 @@ void photonTorpedoes(GameVariables *gameVars)
 	  return;
 	}
 
-	printf("Course (0-9): ");
+	printf("Course (1-9): ");
 
 	gets(temp);
 
@@ -1128,7 +1280,7 @@ void torpedoHit(GameVariables *gameVars)
 	      		gameVars->klingData[i][2] = 0;
 	}
 
-	strcpy(gameVars->objInSector, ">!<");
+	strcpy(gameVars->objInSector, ">B<");
 	stringCompare(gameVars);
 
 	if (gameVars->compare == 1)
@@ -1620,7 +1772,7 @@ void shipDestroyed(GameVariables *gameVars)
 
 void endOfTime(GameVariables *gameVars)
 {
-	printf("It is stardate %d.\n\n", (int) gameVars->stardateCurr);
+	printf("It is stardate %d.\n\n", (int)gameVars->stardateCurr);
 
 	resignCommision(gameVars);
 }
@@ -1658,23 +1810,47 @@ void endOfGame(GameVariables *gameVars)
 
       	gets(temp);
       	printf("\n");
+
       	if (! strncmp(temp, "aye", 3))
       	{
       		//This breaks the eventHandler loop 
         	gameVars->currGame = false;
+        	return;
       	}
       	else
       	{
       		printf("\nMAY THE FORCE BE WITH YOU FRODO!\n");
       		gameVars->running = false;
       		gameVars->currGame = false;
+      		return;
       	}
     }
 }
 
 
-void klingonsMove(GameVariables *gameVars)
+void _klingonsMove(GameVariables *gameVars)
 {
+
+//Called in courseControl
+
+/*
+2580 REM KLINGONS MOVE/FIRE ON MOVING STARSHIP . . .
+2590 FOR I=1 TO K3 : IF K(I,3)=0 THEN 2700
+2610 A$="   " : Z1=K(I,1) : Z2=K(I,2) : GOSUB 8670 : GOSUB 8590
+2660 K(I,1)=Z1 : K(I,2)=Z2 : A$="+K+" : GOSUB 8670
+2700 NEXT I : GOSUB 6000 : D1=0 : D6=W1 : IF W1>=1 THEN D6=1
+2770 FOR I=1 TO 8 : IF D(I)>=0 THEN 2880
+2790 D(I)=D(I)+D6 : IF D(I)>-.1 AND D(I)<0 THEN D(I)=-.1 : GOTO 2880
+2800 IF D(I)<0 THEN 2880
+2810 IF D1<>1 THEN D1=1 : PRINT "DAMAGE CONTROL REPORT :   ";
+2840 PRINT TAB(8); : R1=I : GOSUB 8790 : PRINTG2$;" REPAIR COMPLETED."
+2880 NEXT I : IF RND(1)>.2 THEN 3070
+2910 R1=FNR(1) : IF RND(1)>=.6 THEN 3000
+2930 D(R1)=D(R1)-(RND(1)*5+1) : PRINT "DAMAGE CONTROL REPORT :   ";
+2960 GOSUB 8790 : PRINTG2$;" DAMAGED" : PRINT : GOTO 3070
+3000 D(R1)=D(R1)+RND(1)*3+1 : PRINT "DAMAGE CONTROL REPORT :   ";
+3030 GOSUB 8790 : PRINTG2$;" STATE OF REPAIR IMPROVED" : PRINT
+*/
   int i;
 
   for (i = 0; i < 3; i++)
@@ -1684,7 +1860,8 @@ void klingonsMove(GameVariables *gameVars)
           strcpy(gameVars->objInSector, "   ");
           gameVars->tempSectCoord[0] = gameVars->klingData[i][0];
           gameVars->tempSectCoord[1] = gameVars->klingData[i][1];
-          insertInQuadrant(gameVars);
+          insertInQuadrant(gameVars); //8660 REM INSERT IN STRING ARRAY FOR QUADRANT
+
 
           findEmptyPlace(gameVars);
 
@@ -1698,8 +1875,22 @@ void klingonsMove(GameVariables *gameVars)
   klingonsShoot(gameVars);
 }
 
-//5990 REM KLINGONS SHOOTING
+
 void klingonsShoot(GameVariables *gameVars)
+/*
+5990 REM KLINGONS SHOOTING
+6000 IF K3<=0 THEN RETURN
+6010 IF D0<>0 THEN PRINT "STARBASE SHIELDS PROTECT THE ENTERPRISE" : RETURN
+6040 FOR I=1 TO 3 : IF K(I,3)<=0 THEN 6200
+6060 H=INT((K(I,3)/FND(1))*(2+RND(1))) : S=S-H : K(I,3)=K(I,3)/(3+RND(0))
+6080 PRINT H;" UNIT HIT ON ENTERPRISE FROM SECTOR ";K(I,1);",";K(I,2)
+6090 IF S<=0 THEN 6240
+6100 PRINT "      <SHIELDS DOWN TO ";S;" UNITS>" : IF H<20 THEN 6200
+6120 IF RND(1)>.6ORH/S<=.02 THEN 6200
+6140 R1=FNR(1) : D(R1)=D(R1)-H/S-.5*RND(1) : GOSUB 8790
+6170 PRINT "DAMAGE CONTROL REPORTS ";G2$;" DAMAGED BY THE HIT'"
+6200 NEXT I : RETURN
+*/
 {
 	int hit, i;
 
@@ -1731,9 +1922,9 @@ void klingonsShoot(GameVariables *gameVars)
 
           printf("    <Shields down to %d units>\n\n", gameVars->shields);
 
-	      	if (hit >= 20)
+	      	if(hit >= 20)
 	        {
-	          	if (rnd() <= 0.6 || (hit / gameVars->shields) > 0.2)
+	          	if(rnd() <= 0.6 || (hit / gameVars->shields) > 0.2)
 	            {
 	              	gameVars->tempPos[0] = findRandom();
 	        	  	gameVars->damage[gameVars->tempPos[0]] = gameVars->damage[gameVars->tempPos[0]] - (hit / gameVars->shields) - (0.5 * rnd());
@@ -1748,30 +1939,51 @@ void klingonsShoot(GameVariables *gameVars)
 	}
 } 
 
-void repairDamage(GameVariables *gameVars)
+void _repairDamage(GameVariables *gameVars)
 {
+
+//Called in courseControl
+
+/*
+2700 NEXT I : GOSUB 6000 : D1=0 : D6=W1 : IF W1>=1 THEN D6=1
+2770 FOR I=1 TO 8 : IF D(I)>=0 THEN 2880
+2790 D(I)=D(I)+D6 : IF D(I)>-.1 AND D(I)<0 THEN D(I)=-.1 : GOTO 2880
+2800 IF D(I)<0 THEN 2880
+2810 IF D1<>1 THEN D1=1 : PRINT "DAMAGE CONTROL REPORT :   ";
+2840 PRINT TAB(8); : R1=I : GOSUB 8790 : PRINTG2$;" REPAIR COMPLETED."
+2880 NEXT I : IF RND(1)>.2 THEN 3070
+2910 R1=FNR(1) : IF RND(1)>=.6 THEN 3000
+2930 D(R1)=D(R1)-(RND(1)*5+1) : PRINT "DAMAGE CONTROL REPORT :   ";
+2960 GOSUB 8790 : PRINTG2$;" DAMAGED" : PRINT : GOTO 3070
+3000 D(R1)=D(R1)+RND(1)*3+1 : PRINT "DAMAGE CONTROL REPORT :   ";
+3030 GOSUB 8790 : PRINTG2$;" STATE OF REPAIR IMPROVED" : PRINT
+*/
+
 	int i;
-	double repairFactor; 
+	double repairFactor; //d6 
 
 	repairFactor = gameVars->warpFactor;
-
-	if (gameVars->warpFactor >= 1.0)
+	//2700 ...IF W1>=1 THEN D6=1
+	if(gameVars->warpFactor >= 1.0)
 	{
-		repairFactor = gameVars->warpFactor / 10;
+		repairFactor = 1;
 	}
 
-	for (i = 1; i <= 8; i++)
+	for(i = 0; i < 8; i++)
 	{
-	  	if (gameVars->damage[i] < 0.0)
+		//2770...IF D(I)>=0 THEN 2880 <-- oh this code...
+		//anyway this is logic for the else of the above statement.
+	  	if(gameVars->damage[i] < 0.0)
     	{
 	      	gameVars->damage[i] = gameVars->damage[i] + repairFactor;
-	      	if (gameVars->damage[i] > -0.1 && gameVars->damage[i] < 0)
+	      	if(gameVars->damage[i] > -0.1 && gameVars->damage[i] < 0)
 	        {
 	        	gameVars->damage[i] = -0.1;
 	        }
-	      	else if (gameVars->damage[i] >= 0.0)
+	        //2800 IF D(I)<0 THEN 2880
+	      	else if(gameVars->damage[i] >= 0.0)
 	        {
-	        	if (gameVars->damageRepFlag != 1)
+	        	if(gameVars->damageRepFlag != 1)
 	     	   	{
 	            	gameVars->damageRepFlag = 1;
 	        	}
@@ -1782,24 +1994,26 @@ void repairDamage(GameVariables *gameVars)
 	        }
 	    }
 	}
-
-	if (rnd() <= 0.2)
+	//2880 NEXT I : IF RND(1)>.2 THEN 3070
+	if(rnd() <= 0.2)
 	{
 	  	gameVars->tempPos[0] = findRandom();
-
-	  	if (rnd() < .6)
+  		//2910 R1=FNR(1) : IF RND(1)>=.6 THEN 3000
+	  	if(rnd() < .6)
 	    {
-	      	gameVars->damage[gameVars->tempPos[0]] = gameVars->damage[gameVars->tempPos[0]] - (rnd() * 5.0 + 1.0);
-	      	printf("Damage Control report:\n");
-	      	getDeviceName(gameVars);
-	      	printf("    %s damaged\n\n", gameVars->strResults);
+	      	gameVars->damage[gameVars->tempPos[0]] = gameVars->damage[gameVars->tempPos[0]] - 
+	      											(rnd() * 5.0 + 1.0);
+	      	printf("DAMAGE CONTROL REPORT :   \n");
+	      	getDeviceName(gameVars); //8790
+	      	printf("    %s  DAMAGED\n\n", gameVars->strResults);
 	    }
 	  	else
 	    {
-	      gameVars->damage[gameVars->tempPos[0]] = gameVars->damage[gameVars->tempPos[0]] + (rnd() * 3.0 + 1.0);
-	      printf("Damage Control report:\n");
+	      gameVars->damage[gameVars->tempPos[0]] = gameVars->damage[gameVars->tempPos[0]] + 
+	      										   (rnd() * 3.0 + 1.0);
+	      printf("DAMAGE CONTROL REPORT :   \n");
 	      getDeviceName(gameVars);
-	      printf("    %s state of repair improved\n\n", gameVars->strResults);
+	      printf("    %s STATE OF REPAIR IMPROVED\n\n", gameVars->strResults);
 	    }
 	}
 }
@@ -1841,16 +2055,29 @@ void insertInQuadrant(GameVariables *gameVars)
 8700 Q$=LEFT$(Q$,S8-1)+A$+RIGHT$(Q$,190-S8) : RETURN
 */
 	int i, j = 0;
-
-	gameVars->quadIndex = ((int)(gameVars->tempSectCoord[1] - 0.5) * 3) + ((int)(gameVars->tempSectCoord[0] - 0.5) * 24) + 1;
+	//S8=INT(Z2-.5)*3+INT(Z1-.5)*24+1
+	gameVars->quadIndex = ((int)(gameVars->tempSectCoord[1] - 0.5) * 3) + 
+		((int)(gameVars->tempSectCoord[0] - 0.5) * 24 + 1);
 	if(strlen(gameVars->objInSector)!=3)  //IF  LEN(A$)<>3 THEN  PRINT "ERROR"
 	{
 		printf("ERROR\n");
 		printf("[DEBUG] Error in insertInQuadrant()\n");	
 	}
-	for (i = gameVars->quadIndex - 1; i <= gameVars->quadIndex + 1; i++)
+	// if(gameVars->quadIndex == 1)
+	// {
+
+	// }
+	for(i = gameVars->quadIndex - 1; i <= gameVars->quadIndex + 1; i++)
 	{
-    	gameVars->quadDisp[i] = gameVars->objInSector[j++];
+		if(j < 3 && i < 193)
+		{
+			gameVars->quadDisp[i] = gameVars->objInSector[j++]; // this line is causing a seqfault
+		}
+		else if(i >= 193)
+		{
+			printf("[DEBUG] i : %d\t",i);
+			printf("I mean that's not good\n");
+		}
     }
 }
 
@@ -1888,27 +2115,30 @@ void getDeviceName(GameVariables *gameVars)
 
 void stringCompare(GameVariables *gameVars)
 {
+/*
+8820 REM STRING COMPARISON IN QUADRANT ARRAY
+8830 Z1=INT(Z1+.5) : Z2=INT(Z2+.5) : S8=(Z2-1)*3+(Z1-1)*24+1 : Z3=0
+8890 IF MID$(Q$,S8,3)<>A$ THEN RETURN
+8900 Z3=1 : RETURN
+*/
 	int i;
 	char temp[4];
 
 	gameVars->tempSectCoord[0] = (int)(gameVars->tempSectCoord[0] + 0.5);
 	gameVars->tempSectCoord[1] = (int)(gameVars->tempSectCoord[1] + 0.5);
 
-	gameVars->quadIndex = ((gameVars->tempSectCoord[1] - 1) * 3) + ((gameVars->tempSectCoord[0] - 1) * 24) + 1;
+	gameVars->quadIndex = ((gameVars->tempSectCoord[1] - 1) * 3) +
+						((gameVars->tempSectCoord[0] - 1) * 24) + 1;
 
 	midStr(temp, gameVars->quadDisp, gameVars->quadIndex, 3);
 
 	i = strncmp(temp, gameVars->quadDisp, 3);
-
+	gameVars->compare = 0;
+	//IF MID$(Q$,S8,3)<>A$ THEN RETURN
 	if (i == 0)
 	{
 		gameVars->compare = 1;
 	}
-	else
-	{
-		gameVars->compare = 0;
-	}
-
 	return;
 }
 
@@ -1944,17 +2174,20 @@ void quadrantName(GameVariables *gameVars)
 9250 G2$=G2$+" III" : RETURN
 9260 G2$=G2$+" IV" : RETURN
 */
-    static char * quadName[] = {"Antares","Rigel","Procyon","Vega",
-    "Canopus","Altair","gameVars->objInSectorgittarius","Pollux","Sirius","Deneb","Capella",
-    "Betelgeuse","Aldebaran","Regulus","Arcturus","Spica"};
+    char *quadName[] = {"ANTARES","RIGEL","PROCYON","VEGA",
+    "CANOPUS","ALTAIR","SAGITTARIUS","POLLUX","SIRIUS","DENEB","CAPELLA",
+    "BETELGEUSE","ALDEBARAN","REGULUS","ARCTURUS","SPICA"};
 
-  	static char * sectName[] = {" I"," II"," III"," IV"};
+  	char *sectName[] = {" I"," II"," III"," IV"};
 
-  	if (gameVars->tempQuadCoord[0] < 1 || gameVars->tempQuadCoord[0] > 8 || gameVars->tempQuadCoord[1] < 1 || gameVars->tempQuadCoord[1] > 8)
+  	if (gameVars->tempQuadCoord[0] < 0 || 
+  		gameVars->tempQuadCoord[0] > 7 || 
+  		gameVars->tempQuadCoord[1] < 0 || 
+  		gameVars->tempQuadCoord[1] > 7)
     {	
     	strcpy(gameVars->strResults, "Unknown");
     }
-  	if (gameVars->tempQuadCoord[1] <= 4)
+  	if (gameVars->tempQuadCoord[1] < 4)
     {
     	strcpy(gameVars->strResults, quadName[gameVars->tempQuadCoord[0]]);
     }
@@ -1964,9 +2197,9 @@ void quadrantName(GameVariables *gameVars)
     }
   	if (gameVars->quadName != 1)
     {
-     	if (gameVars->tempQuadCoord[1] > 4)
+     	if (gameVars->tempQuadCoord[1] > 3)
       	{
-	      	gameVars->tempQuadCoord[1] = gameVars->tempQuadCoord[1] - 4;
+	      	gameVars->tempQuadCoord[1] = gameVars->tempQuadCoord[1] - 3;
 	      	strcat(gameVars->strResults, sectName[gameVars->tempQuadCoord[1]]);
       	}
     }
@@ -1993,8 +2226,6 @@ void midStr(char *str1, char *str2, int i, int j)
 
   --i;
   j += i;
-
-  /* @@@ while (i < j && i <= strlen(b)) */
   while (i < j && i <= (int)strlen(str2))
     *str1++ = *(str2 + i++);
 
@@ -2038,6 +2269,7 @@ double rnd(void)
 
 int findRandom(void)
 {
+	//475 DEF FNR(R)=INT(RND(R)*7.98+1.01)
 	return(getRandRange(8));
 }
 

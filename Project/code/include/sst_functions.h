@@ -13,7 +13,7 @@
 
 #ifndef SST_FUN
 #define SST_FUN
-	
+	void zeros(GameVariables *gameVars);
 	void eventHandler(GameVariables *gameVars);
 	void commandHelp(void);
 	void intro(void);
@@ -21,8 +21,8 @@
 	void initialize(GameVariables *gameVars);
 	void newQuadrant(GameVariables *gameVars);
 	void courseControl(GameVariables *gameVars);
-	void completeManeuver(GameVariables *gameVars);
-	void outOfBounds (GameVariables *gameVars);
+	void _completeManeuver(GameVariables *gameVars);
+	void _outOfBounds (GameVariables *gameVars);
 	void maneuverEnergy(GameVariables *gameVars);
 	void shortRangeScan(GameVariables *gameVars);
 	void longRangeScan (GameVariables *gameVars);
@@ -46,9 +46,9 @@
 	void resignCommision(GameVariables *gameVars);
 	void wonGame(GameVariables *gameVars);
 	void endOfGame(GameVariables *gameVars);
-	void klingonsMove(GameVariables *gameVars);
+	void _klingonsMove(GameVariables *gameVars);
 	void klingonsShoot(GameVariables *gameVars);
-	void repairDamage(GameVariables *gameVars);
+	void _repairDamage(GameVariables *gameVars);
 	void findEmptyPlace(GameVariables *gameVars);
 	void insertInQuadrant(GameVariables *gameVars);
 	void getDeviceName(GameVariables *gameVars);

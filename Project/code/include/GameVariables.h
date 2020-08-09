@@ -49,11 +49,11 @@ typedef struct
 	double damage[8];									// d[8]
 	double course;										// c1
 	double deltaCourseWarpFactor;						// a
-
+	//double repairFactor;								//d6 
 	//strings
 	char objInSector[4];								// A$
 	char condition[7];									// C$
-	char quadDisp[194];									// $Q
+	char quadDisp[194];									// Q$
 	char tempStr[2][10];								// X$ X0$
 	char command[6];
 	char commandList[9][6];								// A1$

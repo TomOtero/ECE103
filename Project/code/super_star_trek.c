@@ -58,7 +58,6 @@ void game(GameVariables *gameVars)
 	intro();
 	initialize(gameVars);
 	newQuadrant(gameVars);
-	shortRangeScan(gameVars);
 	gameVars->currGame = true;
 	while(gameVars->currGame)
 	{
@@ -80,6 +79,7 @@ int main()
 	gameVars.running = true;
 	while(gameVars.running)
 	{
+		zeros(&gameVars);
 		game(&gameVars);
 	}
 	return EXIT_SUCCESS;

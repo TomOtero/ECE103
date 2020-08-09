@@ -296,7 +296,7 @@ new_game(void)
         resign_commision();
       else
     {
-          printf("Enter one of the following:\n\n");
+      printf("Enter one of the following:\n\n");
       printf("  nav - To Set Course\n");
       printf("  srs - Short Range Sensors\n");
       printf("  lrs - Long Range Sensors\n");
