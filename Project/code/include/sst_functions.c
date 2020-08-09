@@ -2007,7 +2007,7 @@ void endOfGame(GameVariables *gameVars)
       		printf("\nMAY THE FORCE BE WITH YOU FRODO!\n"); 
       		gameVars->running = false;
       		gameVars->currGame = false;
-      		exit(EXIT_SUCCESS) // 6360 END
+      		exit(EXIT_SUCCESS); // 6360 END
       	}
     }
     else if(gameVars->starbaseTotal <= 0)
