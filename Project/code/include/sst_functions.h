@@ -63,8 +63,7 @@
 	int getRandRange(int iSpread);
 	int doubleToInt (double dubs);
 
-
-
+	// char* MID(char* str1; int pos, int length);
 #endif
 
 
