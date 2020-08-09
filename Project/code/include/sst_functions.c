@@ -121,7 +121,7 @@ void eventHandler(GameVariables *gameVars)
 	  	printf("\n");
 		if(strcmp(gameVars->command,"nav")==0)
 		{
-			courseControl(gameVars); //2300
+			_courseControl(gameVars); //2300
 		}
 		else if (strcmp(gameVars->command,"srs")==0)
 		{
@@ -129,11 +129,11 @@ void eventHandler(GameVariables *gameVars)
 		}
 		else if (strcmp(gameVars->command,"lrs")==0)
 		{
-			longRangeScan(gameVars); //4000		
+			_longRangeScan(gameVars); //4000		
 		}
 		else if (strcmp(gameVars->command,"pha")==0)
 		{
-			phaserControl(gameVars); //4260
+			_phaserControl(gameVars); //4260
 		}
 		else if (strcmp(gameVars->command,"tor")==0)
 		{
@@ -547,7 +547,7 @@ void newQuadrant(GameVariables *gameVars)
 }
 
 
-void courseControl(GameVariables *gameVars)
+void _courseControl(GameVariables *gameVars)
 {
 /*
 2290 REM COURSE CONTROL BEGINS HERE
@@ -988,7 +988,7 @@ FOR J=(I-1)*24+1 TO (I-1)*24+22 STEP 3 : PRINT " ";MID$(Q$,J,3); : NEXT J
 }
 
 
-void longRangeScan (GameVariables *gameVars)
+void _longRangeScan (GameVariables *gameVars)
 {
 /*
 4000 IF D(3)<0 THEN PRINT "LONG RANGE SENSORS ARE INOPERABLE" : GOTO 1990
@@ -1029,7 +1029,7 @@ void longRangeScan (GameVariables *gameVars)
 }
 
 
-void phaserControl(GameVariables *gameVars)
+void _phaserControl(GameVariables *gameVars)
 {
 /*
 4250 REM PHASER CONTROL CODE BEGINS HERE
@@ -1483,19 +1483,19 @@ void libraryComputer(GameVariables *gameVars)
 	printf("\n");
 	if (! strncmp(temp, "0", 1))
 	{
-		galacticRecord(gameVars);	//7540
+		_galacticRecord(gameVars);	//7540
 	}
 	else if (! strncmp(temp, "1", 1))
 	{
-		statusReport(gameVars); 	//7900
+		_statusReport(gameVars); 	//7900
 	}
 	else if (! strncmp(temp, "2", 1))
 	{
-		torpedoData(gameVars);		//8070
+		_torpedoData(gameVars);		//8070
 	}
 	else if (! strncmp(temp, "3", 1))
 	{
-		navData(gameVars);			//8500	
+		_navData(gameVars);			//8500	
 	}
 	else if (! strncmp(temp, "4", 1))
 	{
@@ -1518,7 +1518,7 @@ void libraryComputer(GameVariables *gameVars)
 }
 
 
-void galacticRecord(GameVariables *gameVars)
+void _galacticRecord(GameVariables *gameVars)
 {
 /*
 7530 REM CUM GALACTIC RECORD
@@ -1537,9 +1537,12 @@ void galacticRecord(GameVariables *gameVars)
 7800 Z5=5 : GOSUB 9030 : J0=INT(39-.5*LEN(G2$)) : PRINT TAB(J0);G2$;
 7850 PRINT : PRINT O1$ : NEXT I : PRINT : GOTO 1990
 */	
+
+//This function is only called by libraryComputer 
+
 	int i, j;
 
-	printf("\n     Computer Record of Galaxy for Quadrant %d,%d\n\n", gameVars->entQuad[0], gameVars->entQuad[1]);
+	printf("\nCOMPUTER RECORD OF GALAXY FOR QUADRANT %d,%d\n\n", gameVars->entQuad[0], gameVars->entQuad[1]);
 	printf("     1     2     3     4     5     6     7     8\n");
 
 	for (i = 0; i < 8; i++)
@@ -1567,7 +1570,7 @@ void galacticRecord(GameVariables *gameVars)
 }
 
 
-void statusReport(GameVariables *gameVars)
+void _statusReport(GameVariables *gameVars)
 {
 /*
 7890 REM STATUS REPORT
@@ -1580,6 +1583,9 @@ void statusReport(GameVariables *gameVars)
 8010 PRINT "YOUR STUPIDITY HAS LEFT YOU ON YOUR OWN IN"
 8020 PRINT "THE GALAXY -- YOU HAVE NO STARBASES LEFT!" : GOTO 5690
 */
+
+//This function is only called by libraryComputer
+
 	strcpy(gameVars->tempStr[0], "");
 
 	printf("   STATUS REPORT : \n\n");
@@ -1614,7 +1620,7 @@ void statusReport(GameVariables *gameVars)
 }
 
 
-void torpedoData(GameVariables *gameVars)
+void _torpedoData(GameVariables *gameVars)
 {
 /*
 8060 REM TORPEDO, BASE NAV, D/D CALCULATOR
@@ -1648,6 +1654,9 @@ void torpedoData(GameVariables *gameVars)
 8510 PRINT "MR. SPOCK REPORTS,  'SENSORS SHOW NO STARBASES IN THIS";
 8520 PRINT " QUADRANT.'" : GOTO 1990
 */
+
+//This function is only called by libraryComputer
+
   	int i;
   	strcpy(gameVars->tempStr[0], "");
   	//IF K3<=0 THEN 4270
@@ -1681,41 +1690,58 @@ void torpedoData(GameVariables *gameVars)
   	}
 }
 
-void navData(GameVariables *gameVars)
+void _navData(GameVariables *gameVars)
 {
+/*
+8500 IF B3<>0 THEN PRINT "FROM ENTERPRISE TO STARBASE : " : W1=B4 : X=B5 : GOTO 8120
+8510 PRINT "MR. SPOCK REPORTS,  'SENSORS SHOW NO STARBASES IN THIS";
+8520 PRINT " QUADRANT.'" : GOTO 1990
+*/
 	if (gameVars->starbaseQuadrant <= 0)
 	{
-		printf("Mr. Spock reports,\n");
-		printf("  'Sensors show no starbases in this quadrant.'\n\n");
+		printf("MR. SPOCK REPORTS,  'SENSORS SHOW NO STARBASES IN THIS\n");
+		printf(" QUADRANT.'\n\n");
 		return;
 	}
+	else
+	{
+		printf("FROM ENTERPRISE TO STARBASE : \n");
+		gameVars->warpFactor = gameVars->starbaseLocation[0];
+		gameVars->navX  = gameVars->starbaseLocation[1];
+		gameVars->course = gameVars->entSect[0];
+		gameVars->deltaCourseWarpFactor  = gameVars->entSect[1];
 
-	gameVars->warpFactor = gameVars->starbaseLocation[0];
-	gameVars->navX  = gameVars->starbaseLocation[1];
-	gameVars->course = gameVars->entSect[0];
-	gameVars->deltaCourseWarpFactor  = gameVars->entSect[1];
+		computeVector(gameVars); //GOTO 8120
+	}
 
-	computeVector(gameVars);
 }
 
 void dirdistCalc(GameVariables *gameVars)
 {
+/*
+8150 PRINT "DIRECTION/DISTANCE CALCULATOR : "
+8160 PRINT "YOU ARE AT QUADRANT ";Q1;",";Q2;" SECTOR ";S1;",";S2
+8170 PRINT "PLEASE ENTER" : INPUT "  INITIAL COORDINATES (X,Y) ";C1,A
+8200 INPUT "  FINAL COORDINATES (X,Y) ";W1,X
+*/
+
+	// This implementation was found online and seemed easier than parsing the comma.
 	char temp[6];
 
-	printf("Direction/Distance Calculator\n\n");
-	printf("You are at quadrant %d,%d sector %d,%d\n\n", gameVars->entQuad[0], gameVars->entQuad[1],
-	/* @@@ doubleToInt(s1), doubleToInt(s2)); */
+	printf("DIRECTION/DISTANCE CALCULATOR : \n\n");
+	printf("YOU ARE AT QUADRANT %d,%d SECTOR %d,%d\n\n", gameVars->entQuad[0], gameVars->entQuad[1],
+	
 	(int)gameVars->entSect[0], (int)gameVars->entSect[1]);
 
-	printf("Please enter initial X coordinate: ");
+	printf("PLEASE ENTER INITIAL X COORDINATE: ");
 	gets(temp);
 	gameVars->course = atoi(temp);
 
-	printf("Please enter initial Y coordinate: ");
+	printf("PLEASE ENTER INITIAL Y COORDINATE: ");
 	gets(temp);
 	gameVars->deltaCourseWarpFactor = atoi(temp);
 
-	printf("Please enter final X coordinate: ");
+	printf("PLEASE ENTER FINAL X COORDINATE: ");
 	gets(temp);
 	gameVars->warpFactor = atoi(temp);
 
@@ -1730,56 +1756,73 @@ void dirdistCalc(GameVariables *gameVars)
 //7390 REM SETUP TO CHANGE CUM GAL RECORD TO GALAXY MAP
 void galaxyMap(GameVariables *gameVars)
 {
+/*
+7390 REM SETUP TO CHANGE CUM GAL RECORD TO GALAXY MAP
+7400 H8=0 : G5=1 : PRINT "                        THE GALAXY" : GOTO 7550
+7530 REM CUM GALACTIC RECORD
+7540 REM INPUT "DO YOU WANT A HARDCOPY? IS THE TTY ON (Y/N) ";A$
+7542 REM IF A$="Y" THEN POKE 1229,2 : POKE1237,3 : NULL1
+7543 PRINT : PRINT "        ";
+7544 PRINT "COMPUTER RECORD OF GALAXY FOR QUADRANT ";Q1;",";Q2
+7546 PRINT
+7550 PRINT "       1     2     3     4     5     6     7     8"
+7560 O1$="     ----- ----- ----- ----- ----- ----- ----- -----"
+7570 PRINT O1$ : FOR I=1 TO 8 : PRINT I;"  "; : IF H8=0 THEN 7740
+7630 FOR J=1 TO 8 : PRINT "   "; : IF Z(I,J)=0 THEN PRINT "***"; : GOTO 7720
+7700 PRINT RIGHT$(STR$(Z(I,J)+1000),3);
+7720 NEXT J : GOTO 7850
+7740 Z4=I : Z5=1 : GOSUB 9030 : J0=INT(15-.5*LEN(G2$)) : PRINT TAB(J0);G2$;
+7800 Z5=5 : GOSUB 9030 : J0=INT(39-.5*LEN(G2$)) : PRINT TAB(J0);G2$;
+7850 PRINT : PRINT O1$ : NEXT I : PRINT : GOTO 1990
+*/
 	int i, j, j0;
 
 	gameVars->quadName = 1;
 
 	printf("\n                   The Galaxy\n\n");
 	printf("    1     2     3     4     5     6     7     8\n");
-
-	for (i = 1; i <= 8; i++)
+//7570 PRINT O1$ : FOR I=1 TO 8 : PRINT I;"  "; : IF H8=0 THEN 7740
+	for (i = 0; i < 8; i++)
 	{
 		printf("  ----- ----- ----- ----- ----- ----- ----- -----\n");
-
 		printf("%d ", i);
-
+		//7740 Z4=I : Z5=1 : GOSUB 9030 : J0=INT(15-.5*LEN(G2$)) : PRINT TAB(J0);G2$;
 		gameVars->tempQuadCoord[0] = i;
 		gameVars->tempQuadCoord[1] = 1;
 		quadrantName(gameVars);
-
-		j0 = (int)(11 - (strlen(gameVars->strResults) / 2)); //J0=INT(15-.5*LEN(G2$))
-
+		
+		j0 = (int)(15 - (strlen(gameVars->strResults) / 2));
+		
+		//PRINT TAB(J0)
 		for (j = 0; j < j0; j++)
 		{
 			printf(" ");
 		}
-
+		
 		printf(gameVars->strResults);
-
+		
 		for (j = 0; j < j0; j++)
 	  	{
 			printf(" ");
 	  	}
-
-		if (! (strlen(gameVars->strResults) % 2))
-  		{
-	  		printf(" ");
-  		}
-
+	  	// I saw this logic in other examples but it's not in the original
+		//if (! (strlen(gameVars->strResults) % 2))
+  		//{
+	  	//	printf(" ");
+  		//}
+		
+		//7800 Z5=5 : GOSUB 9030 : J0=INT(39-.5*LEN(G2$)) : PRINT TAB(J0);G2$;
 		gameVars->tempQuadCoord[1] = 5;
 		quadrantName(gameVars);
-
-		j0 = (int)(12 - (strlen(gameVars->strResults) / 2));
-
+		j0 = (int)(39 - (strlen(gameVars->strResults) / 2));
 		for (j = 0; j < j0; j++)
 		{	
 			printf(" ");
 		}
 		printf(gameVars->strResults); 
-
+		
 		printf("\n");
 	}
-
 	printf("  ----- ----- ----- ----- ----- ----- ----- -----\n\n");
 
 }
@@ -1796,13 +1839,13 @@ void computeVector(GameVariables *gameVars)
 		if(gameVars->deltaCourseWarpFactor > 0.0)
 		{    
 		  gameVars->course = 3.0;
-		  sub2(gameVars); //GOTO 8420
+		  _direction_calc2(gameVars); //GOTO 8420
 		  return;
 		}
 		if(gameVars->navX != 0)
 		{
 		  gameVars->course = 5.0;
-		  sub1(gameVars); //GOTO 8290
+		  _direction_calc1(gameVars); //GOTO 8290
 		  return;
 		}
 	}
@@ -1810,41 +1853,56 @@ void computeVector(GameVariables *gameVars)
 	else if(gameVars->deltaCourseWarpFactor < 0.0)
 	{
 		gameVars->course = 7.0;
-		sub2(gameVars);
+		_direction_calc2(gameVars);
 		return;
 	}
 	//8260 IF X>0 THEN 8280
 	else if(gameVars->navX > 0.0)
 	{
 		gameVars->course = 1.0;
-		sub1(gameVars);
+		_direction_calc1(gameVars);
 		return;
 	}
 	else
-	{
-		printf("[ERROR]\n", );
+	{ //this error state is unaccounted for in the original code
+		printf("[ERROR] void computeVector(GameVariables *gameVars)\n");
 	}
 }
 
-void sub1(GameVariables *gameVars)
+void _direction_calc1(GameVariables *gameVars)
 {
+/*
+8290 IF ABS(A)<=ABS(X) THEN 8330
+8310 PRINT "DIRECTION =";C1+(((ABS(A)-ABS(X))+ABS(A))/ABS(A)) : GOTO 8460
+8330 PRINT "DIRECTION =";C1+(ABS(A)/ABS(X)) : GOTO 8460
+...
+8460 PRINT "DISTANCE =";SQR(X^2+A^2) : IF H8=1 THEN 1990
+*/
 	gameVars->navX = fabs(gameVars->navX);
 	gameVars->deltaCourseWarpFactor = fabs(gameVars->deltaCourseWarpFactor);
 
 	if (gameVars->deltaCourseWarpFactor <= gameVars->navX)
 		{
-		printf("  DIRECTION = %4.2f\n", gameVars->course + (gameVars->deltaCourseWarpFactor / gameVars->navX));
+		printf("  DIRECTION = %4.2f\n", gameVars->course + 
+						(gameVars->deltaCourseWarpFactor / gameVars->navX));
 		}
 	else
 		{
-		printf("  DIRECTION = %4.2f\n", gameVars->course + (((gameVars->deltaCourseWarpFactor * 2) - gameVars->navX) / gameVars->deltaCourseWarpFactor));
+		printf("  DIRECTION = %4.2f\n", gameVars->course + 
+						(((gameVars->deltaCourseWarpFactor * 2) - 
+						gameVars->navX) / gameVars->deltaCourseWarpFactor));
 		}
-
 	printf("  DISTANCE = %4.2f\n\n", (gameVars->navX > gameVars->deltaCourseWarpFactor) ? gameVars->navX : gameVars->deltaCourseWarpFactor);
 }
 
-void sub2(GameVariables *gameVars)
+void _direction_calc2(GameVariables *gameVars)
 {
+/*
+8420 IF ABS(A)>=ABS(X) THEN 8450
+8430 PRINT "DIRECTION =";C1+(((ABS(X)-ABS(A))+ABS(X))/ABS(X)) : GOTO 8460
+8450 PRINT "DIRECTION =";C1+(ABS(X)/ABS(A))
+8460 PRINT "DISTANCE =";SQR(X^2+A^2) : IF H8=1 THEN 1990
+*/
 	gameVars->navX = fabs(gameVars->navX);
 	gameVars->deltaCourseWarpFactor = fabs(gameVars->deltaCourseWarpFactor);
 
@@ -1853,12 +1911,9 @@ void sub2(GameVariables *gameVars)
 		printf("  DIRECTION = %4.2f\n", gameVars->course + (gameVars->navX / gameVars->deltaCourseWarpFactor));
 		}
 	else
-	/* @@@ printf("  DIRECTION = %4.2f\n\n", gameVars->course + (((gameVars->navX * 2) - a) / gameVars->navX)); */
 		{
 		printf("  DIRECTION = %4.2f\n", gameVars->course + (((gameVars->navX * 2) - gameVars->deltaCourseWarpFactor) / gameVars->navX));
 		}
-
-	/* @@@ printf("  DISTANCE = %4.2f\n", (gameVars->navX > a) ? gameVars->navX : a); */
 	printf("  DISTANCE = %4.2f\n\n", (gameVars->navX > gameVars->deltaCourseWarpFactor) ? gameVars->navX : gameVars->deltaCourseWarpFactor);
 }
 
