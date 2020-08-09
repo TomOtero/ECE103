@@ -153,7 +153,7 @@ void eventHandler(GameVariables *gameVars)
 		}
 		else if (strcmp(gameVars->command,"xxx")==0)
 		{
-			resignCommision(gameVars); //6270		
+			endMission(gameVars); //6270		
 		}
 		else if(strcmp(gameVars->command,"help")==0)
 		{
@@ -1053,29 +1053,34 @@ void _phaserControl(GameVariables *gameVars)
 4650 K(I,3)=0 : G(Q1,Q2)=G(Q1,Q2)-100 : Z(Q1,Q2)=G(Q1,Q2) : IF K9<=0 THEN 6370
 4670 NEXTI : GOSUB 6000 : GOTO 1990
 */
-	int firePhasers = 3000;
+	int firePhasers = 3000; // X
 	int maxDamage;
 	int damageDone;
-	
-	if (gameVars->damage[4] < 0)
+	//4260 IF D(4)<0 THEN PRINT "PHASERS INOPERATIVE" : GOTO 1990
+	if (gameVars->damage[3] < 0)
 	{
 		printf("PHASERS INOPERATIVE\n");
 		return;
 	}
-	
+	//IF K3>0 THEN 4330... else...
 	if (gameVars->klingStart <= 0)
 	{
 		printf("SCIENCE OFFICER SPOCK REPORTS  'SENSORS SHOW NO ENEMY SHIPS\n");
 		printf("                                IN THIS QUADRANT'\n");
 		return;
 	}
-	
-	if (gameVars->damage[8] < 0)
+	//4330 IF D(8)<0 THEN PRINT "COMPUTER FAILURE HAMPERS ACCURACY"
+	if (gameVars->damage[7] < 0)
 	{
 		printf("COMPUTER FAILURE HAMPERS ACCURACY\n");
 	}
-	
+
 	printf("PHASERS LOCKED ON TARGET;  \n");
+	// This recursive behaviour is essentially a while loop
+	// kind of cool.
+	//4360 PRINT "ENERGY AVAILABLE =";E;" UNITS"
+	//4370 INPUT "NUMBER OF UNITS TO FIRE? ";X : IF X<=0 THEN 1990
+	//4400 IF E-X<0 THEN 4360
 	while ((gameVars->currEnergy - firePhasers) <= 0)
 	{
 		printf("ENERGY AVAILABLE = %d UNITS\n", gameVars->currEnergy);
@@ -1087,17 +1092,15 @@ void _phaserControl(GameVariables *gameVars)
 			return;
 		}
 	}
-	
+	//4410 E=E-X : IF D(7)<0 THEN X=X*RND(1)
 	if (gameVars->damage[7] < 0)
 	{
-		firePhasers = (int)(firePhasers*rand());
+		firePhasers = (int)(firePhasers*rnd());
 	}
-	
 	gameVars->currEnergy = gameVars->currEnergy - firePhasers;
+	maxDamage = (int)(firePhasers/gameVars->klingStart);
 	
-	maxDamage = firePhasers/gameVars->klingStart;
-	
-	
+	//4450 H1=INT(X/K3) : FOR I=1 TO 3 : IF K(I,3)<=0 THEN 4670
 	for (int i = 0; i < 3; i++)
 	{
 		if (gameVars->klingData [i][2] <= 0)
@@ -1105,20 +1108,21 @@ void _phaserControl(GameVariables *gameVars)
 			return;
 		}
 		
-		damageDone = (maxDamage/findDistance(gameVars,i))*(rand()); //Confirm Distance Function Name
+		damageDone = (maxDamage/findDistance(gameVars,i))*(rnd()+2);
 		
-		if (damageDone < (.15 * gameVars->klingData[i][2]))
+		//IF H>.15*K(I,3) THEN 4530... else...
+		if (damageDone > (0.15 * gameVars->klingData[i][2]))
 		{
 			printf("SENSORS SHOW NO DAMAGE TO ENEMY AT %d, %d\n", 
-				gameVars->klingData[i][0],gameVars->klingData[i][1]);
-			return;
+				gameVars->klingData[i][0],gameVars->klingData[i][1]); //GOTO 4670
+			return; //4670 NEXTI : GOSUB 6000 : GOTO 1990
 		}
 		
 		gameVars->klingData[i][2] = gameVars->klingData[i][2] - damageDone; 
 		
 		printf("%d UNIT HIT ON KLINGON AT SECTOR %d, %d\n", 
 			damageDone, gameVars->klingData [i][0], gameVars->klingData[i][1]);
-		
+		// IF K(I,3)<=0 THEN PRINT "*** KLINGON DESTROYED ***" : GOTO 4580
 		if (gameVars->klingData[i][2] <= 0)
 		{
 			printf("*** KLINGON DESTROYED ***");
@@ -1132,11 +1136,13 @@ void _phaserControl(GameVariables *gameVars)
 				gameVars->galaxy [gameVars->entQuad[0]][gameVars->entQuad[1]] - 100;
 			gameVars->galaxyRecord[gameVars->entQuad[0]][gameVars->entQuad[1]] = 
 				gameVars->galaxy [gameVars->entQuad[0]][gameVars->entQuad[1]];
+			//IF K9<=0 THEN 6370 // WIN!!
 			if (gameVars->klingLeft <= 0)
 			{
-				endOfGame(gameVars);
+				wonGame(gameVars);
 			}
 		}
+		//4560 PRINT "   (SENSORS SHOW";K(I,3);" UNITS REMAINING)" : GOTO 4670
 		else
 		{
 			printf("   (SENSORS SHOW %d UNITS REMAINING)", gameVars->klingData[i][2]);
@@ -1321,7 +1327,7 @@ void torpedoHit(GameVariables *gameVars)
 	      	printf("You are hereby relieved of command\n");
 	      	printf("and sentanced to 99 stardates of hard");
 	      	printf("labor on Cygnus 12!!\n");
-	      	resignCommision(gameVars);
+	      	endMission(gameVars);
 	    }
 
 	  	printf("Starfleet Command reviewing your record to consider\n");
@@ -1920,29 +1926,45 @@ void _direction_calc2(GameVariables *gameVars)
 
 void shipDestroyed(GameVariables *gameVars)
 {
-	printf("The Enterprise has been destroyed. ");
-	printf("The Federation will be conquered.\n\n");
+/*
+6240 PRINT : PRINT "THE ENTERPRISE HAS BEEN DESTROYED. THE FEDERATION ";
+6250 PRINT "WILL BE CONQUERED" : GOTO  6220
+*/
+	printf("THE ENTERPRISE HAS BEEN DESTROYED. THE FEDERATION \n");
+	printf("WILL BE CONQUERED\n\n");
 
-	endOfTime(gameVars);
+	endOfTime(gameVars); //6220
 }
 
 void endOfTime(GameVariables *gameVars)
 {
-	printf("It is stardate %d.\n\n", (int)gameVars->stardateCurr);
+	/*6220 PRINT "IT IS STARDATE";T : GOTO  6270*/
+	printf("IT IS STARDATE %d.\n\n", (int)gameVars->stardateCurr);
 
-	resignCommision(gameVars);
+	endMission(gameVars); //6270
 }
 
-void resignCommision(GameVariables *gameVars)
+void endMission(GameVariables *gameVars)
 {
-	printf("There were %d Klingon Battlecruisers left at the", gameVars->klingLeft);
-	printf(" end of your mission.\n\n");
+/*
+6270 PRINT "THERE WERE ";K9;" KLINGON BATTLE CRUISERS LEFT AT"
+6280 PRINT "THE END OF YOUR MISSION."
+6290 PRINT : PRINT : IF B9=0 THEN 6360 <-- So if you kill all the star bases you do not get to continue...
+
+*/
+	printf("THERE WERE %d KLINGON BATTLE CRUISERS LEFT AT\n", gameVars->klingLeft);
+	printf("THE END OF YOUR MISSION.\n\n");
 
 	endOfGame(gameVars);
 }
 
 void wonGame(GameVariables *gameVars)
 {
+	/*
+6370 PRINT "CONGRATULATION, CAPTAIN!   THEN  LAST KLINGON BATTLE CRUISER"
+6380 PRINT "MENACING THE FEDERATION HAS BEEN DESTROYED." : PRINT
+6400 PRINT "YOUR EFFICIENCY RATING IS";1000*(K7/(T-T0))^2 : GOTO 6290
+	*/
   	printf("CONGRATULATION, CAPTAIN!   THE LAST KLINGON BATTLE CRUISER\n");
   	printf("MENACING THE FEDERATION HAS BEEN DESTROYED.\n\n");
  
@@ -1956,9 +1978,16 @@ void wonGame(GameVariables *gameVars)
 
 void endOfGame(GameVariables *gameVars)
 {
-  char temp[6];
+	/*
+6290 PRINT : PRINT : IF B9=0 THEN 6360
+6310 PRINT "THE FEDERATION IS IN NEED OF A NEW STARSHIP COMMANDER"
+6320 PRINT "FOR A SIMILAR MISSION -- IF THERE IS A VOLUNTEER,"
+6330 INPUT "LET HIM STEP FORWARD AND ENTER 'AYE' ";A$ : IF A$="AYE" THEN 10
+6360 END <-- -_- ...this is why no one uses basic...
+	*/
+  	char temp[6];
 
-  if (gameVars->starbaseTotal > 0)
+  	if(gameVars->starbaseTotal > 0)
     {
       	printf("THE FEDERATION IS IN NEED OF A NEW STARSHIP COMMANDER");
       	printf(" FOR A SIMILAR MISSION -- IF THERE IS A VOLUNTEER,");
@@ -1975,12 +2004,21 @@ void endOfGame(GameVariables *gameVars)
       	}
       	else
       	{
-      		printf("\nMAY THE FORCE BE WITH YOU FRODO!\n");
+      		printf("\nMAY THE FORCE BE WITH YOU FRODO!\n"); 
       		gameVars->running = false;
       		gameVars->currGame = false;
-      		return;
+      		exit(EXIT_SUCCESS) // 6360 END
       	}
     }
+    else if(gameVars->starbaseTotal <= 0)
+    {
+    	printf("You killed all the Starbases\n");
+    	printf("which apparently means you must\n");
+    	printf("be inconvenienced to play again :P\n");
+    	printf("\nEND\n");
+
+    }
+
 }
 
 
@@ -2017,8 +2055,7 @@ void _klingonsMove(GameVariables *gameVars)
           gameVars->tempSectCoord[0] = gameVars->klingData[i][0];
           gameVars->tempSectCoord[1] = gameVars->klingData[i][1];
           insertInQuadrant(gameVars); //8660 REM INSERT IN STRING ARRAY FOR QUADRANT
-
-
+          
           findEmptyPlace(gameVars);
 
           gameVars->klingData[i][0] = gameVars->tempSectCoord[0];

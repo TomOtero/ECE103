@@ -43,7 +43,7 @@
 	void _direction_calc2(GameVariables *gameVars);
 	void shipDestroyed(GameVariables *gameVars);
 	void endOfTime(GameVariables *gameVars);
-	void resignCommision(GameVariables *gameVars);
+	void endMission(GameVariables *gameVars);
 	void wonGame(GameVariables *gameVars);
 	void endOfGame(GameVariables *gameVars);
 	void _klingonsMove(GameVariables *gameVars);
